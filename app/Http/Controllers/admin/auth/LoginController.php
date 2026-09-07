@@ -14,6 +14,7 @@ use Validator;
 class LoginController extends Controller
 {
     public function index(){
+        p(1);
         $data = array(
             'saveurl' =>url('/admin/login-save'),
             'title' =>"Admin Login",
