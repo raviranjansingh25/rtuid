@@ -503,7 +503,7 @@ Route::group(['prefix' => 'shoper','middleware'=>'ifShoper'],function()
 
 
 Route::group(['middleware' => 'ifnotadmin'], function () {
-    Route::get('/admin', [LoginController::class, 'index'])->name('adminlogin');
+    
     Route::post('/admin/login-save', [LoginController::class, 'save'])->name('loginsave');
     Route::post('/admin/login-save_image', [LoginController::class, 'loginsaveimage'])->name('loginsaveimage');
 });
