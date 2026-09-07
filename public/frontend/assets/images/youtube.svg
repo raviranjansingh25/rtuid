@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="41" height="42" viewBox="0 0 41 42">
+  <g id="youtube" transform="translate(-0.207)">
+    <g id="Color" transform="translate(0 0)">
+      <g id="_02.YouTube" data-name="02.YouTube">
+        <ellipse id="Background" cx="20.5" cy="21" rx="20.5" ry="21" transform="translate(0.207 0)" fill="red"/>
+        <path id="Icon" d="M53.559,47.41H40.1a4.1,4.1,0,0,0-4.1,4.1V58.79a4.1,4.1,0,0,0,4.1,4.1H53.559a4.1,4.1,0,0,0,4.1-4.1V51.508A4.1,4.1,0,0,0,53.559,47.41ZM43.974,58.467V51.83l5.706,3.319Z" transform="translate(-26.106 -34.204)" fill="#fff"/>
+      </g>
+    </g>
+  </g>
+</svg>

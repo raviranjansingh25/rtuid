@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="icon" type="image/x-icon" href="./images/fav.svg">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Telimed</title>
+    
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+      rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick-theme.min.css" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick.min.css" rel="stylesheet"/>
+    <!-- <link rel="stylesheet" href="./css/animate.min.css" /> -->
+    <link rel="stylesheet" href="./css/rome.css">
+    <link rel="stylesheet" href="./css/bootstrap.min.css" />
+    <link rel="stylesheet" href="./css/style.css" />
+     
+  </head>
+  <body>
+    <header>
+      <div class='container-fluid'>
+        <div class='mobile_nav'>
+          <button class='burger' title='Open and close menu'>
+            <span class='mobile_nav__label'>Open and close menu</span>
+            <div class='top stripe'></div>
+            <div class='middle stripe'></div>
+            <div class='bottom stripe'></div>
+          </button>
+        </div>
+        <div class='mobile_menu'>
+          <nav>
+            <ul>
+              <li >
+                <a href="dashboard.html">Dashboard</a>
+              </li>
+              <li class='visited'>
+                <a href="find_practitioner_list.html">Directory</a>
+              </li>
+              <li>
+                <a href="">Learning Hub</a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+        <div class='logo'>
+          <span><a href="index.html"><img class="img-fluid" src="./images/logo.svg" alt=""></a></span>
+        </div>
+        <nav class='head_nav'>
+          <ul>
+            <li >
+              <a href="dashboard.html">Dashboard</a>
+            </li>
+            <li class='visited'>
+              <a href="">Directory</a>
+            </li>
+            <li>
+              <a href="">Learning Hub</a>
+            </li>
+            
+          </ul>
+        </nav>
+        <div class='icons'>
+          <div class='block h-search-main position-relative'>
+            <input type="text" class="h-srch" name="" id="" placeholder="Search...">
+            <button class="h-search-btn"><img class="img-fluid" src="./images/h-search.svg" alt=""></button>
+          </div>
+          <div class='block'>
+            <a class='notification' href="my-wishlist.html" title='Notifications'>
+             <img class="img-fluid" src="./images/h-like.svg" alt="">
+            </a>
+          </div>
+          <div class='block'>
+            <a class='user_profile' href="dashboard.html" title='User profile'>
+              <img class="img-fluid" src="./images/review-1.svg" alt="">
+            </a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <section class="prgrms course-section">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-md-3">
+            <div class="side-mnu">
+              <div class="d-flex practi-prfl">
+                <img src="./images/team-4.png" alt="">
+                <p>Lisa Parker's</p>
+              </div>
+              <ul>
+                <li><a class="active" href="dashboard.html"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g transform="translate(-2 -2)"><path d="M15.4,15A2.4,2.4,0,0,0,13,17.4v3.595a2.4,2.4,0,0,0,2.4,2.4h.029a18.3,18.3,0,0,0,3.867-.318,5.464,5.464,0,0,0,2.773-1.4,5.464,5.464,0,0,0,1.4-2.773,12.177,12.177,0,0,0,.23-1.5A2.251,2.251,0,0,0,21.388,15Z" transform="translate(2.216 2.612)" fill="#303030"/><path d="M2,15.822V13.4A2.4,2.4,0,0,1,4.4,11h5.991a2.4,2.4,0,0,1,2.4,2.4v8.388a2.4,2.4,0,0,1-2.4,2.4h-.029a18.3,18.3,0,0,1-3.867-.318,5.464,5.464,0,0,1-2.772-1.4,5.464,5.464,0,0,1-1.4-2.773A18.3,18.3,0,0,1,2,15.822Z" transform="translate(0 1.819)" fill="#303030"/><path d="M23.784,12.784a2.4,2.4,0,0,1-2.4,2.4H15.4a2.4,2.4,0,0,1-2.4-2.4V4.4A2.4,2.4,0,0,1,15.4,2h.029a18.3,18.3,0,0,1,3.867.318,5.464,5.464,0,0,1,2.773,1.4,5.464,5.464,0,0,1,1.4,2.772,18.3,18.3,0,0,1,.318,3.867Z" transform="translate(2.216)" fill="#303030"/><path d="M12.771,4.4a2.4,2.4,0,0,0-2.4-2.4h-.029a18.3,18.3,0,0,0-3.867.318,5.464,5.464,0,0,0-2.772,1.4,5.464,5.464,0,0,0-1.4,2.772,12.186,12.186,0,0,0-.23,1.5,2.251,2.251,0,0,0,2.308,2.394h5.991a2.4,2.4,0,0,0,2.4-2.4Z" transform="translate(0.013)" fill="#303030"/></g></svg> Dashboard</a></li>
+
+                <li><a href="my-profile.html"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g transform="translate(-24.165)"><g transform="translate(24.165)"><g transform="translate(0)"><path d="M118.285,12.455c4.123,0,7.493-2.8,7.493-6.227S122.407,0,118.285,0s-7.493,2.8-7.493,6.227S114.162,12.455,118.285,12.455Z" transform="translate(-106.283)" fill="#303030"/><path d="M48.113,252.372a5.65,5.65,0,0,0-.7-1.142,8.822,8.822,0,0,0-5.989-3.372,1.4,1.4,0,0,0-.882.19,8.136,8.136,0,0,1-8.755,0,1.245,1.245,0,0,0-.882-.19,8.756,8.756,0,0,0-5.989,3.372,6.514,6.514,0,0,0-.7,1.142.525.525,0,0,0,.03.517,12.569,12.569,0,0,0,2.219,2.5c.426.381.912.734,1.4,1.088a15.192,15.192,0,0,0,16.537,0,14.488,14.488,0,0,0,2.8-2.5,9.549,9.549,0,0,0,.821-1.088A.427.427,0,0,0,48.113,252.372Z" transform="translate(-24.165 -234.925)" fill="#303030"/></g></g></g></svg> My Profile</a></li>
+
+                <li><a  href="my-courses.html"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g transform="translate(0 -24.924)"><path d="M176.924,126.924v2.545a4.1,4.1,0,0,0,8.208,0v-2.545Z" transform="translate(-169.028 -96.701)" fill="#303030"/><path d="M124.548,24.924H113.567a.794.794,0,0,0,0,1.558h2.1v2.182h6.777V26.482H123.9v.883a.655.655,0,1,0,1.287,0V25.7A.721.721,0,0,0,124.548,24.924Z" transform="translate(-107.058 0)" fill="#303030"/><path d="M333.255,157.392a2.326,2.326,0,0,0,.134-.779v-9.351a2.34,2.34,0,0,0-2.338-2.338h-3.169v1.61a5.652,5.652,0,0,1-2.03,4.34,15.252,15.252,0,0,1,2.835,6.517Z" transform="translate(-310.515 -113.766)" fill="#303030"/><path d="M45.625,157.392a15.252,15.252,0,0,1,2.835-6.517,5.652,5.652,0,0,1-2.03-4.34v-1.61H43.262a2.34,2.34,0,0,0-2.338,2.338v9.351a2.327,2.327,0,0,0,.134.779Z" transform="translate(-39.798 -113.766)" fill="#303030"/><path d="M17.253,414.924H0a3.707,3.707,0,0,0,3.513,3.74H20.487A3.707,3.707,0,0,0,24,414.924Z" transform="translate(0 -369.74)" fill="#303030"/><path d="M202.295,278.192l2.938-1.836a6.034,6.034,0,0,0-.644-.8,5.657,5.657,0,0,1-4.59,0,6.032,6.032,0,0,0-.644.8Z" transform="translate(-190.295 -237.616)" fill="#303030"/><path d="M270.924,320.583h4.093a18.231,18.231,0,0,0-.976-3.1q-.095-.221-.192-.429l-2.924,1.828Z" transform="translate(-258.47 -276.957)" fill="#303030"/><path d="M166.221,318.885l-2.924-1.828q-.1.22-.2.454a18.22,18.22,0,0,0-.966,3.072h4.093Z" transform="translate(-154.675 -276.957)" fill="#303030"/></g></svg> My Courses</a></li>
+
+                <li><a href=""><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M38.489,11a2.089,2.089,0,1,1-2.147,2.088A2.121,2.121,0,0,1,38.489,11ZM30.812,22.013h3.349c1.241,0,1.906-1.306,2.492-2.459.48-.941.932-1.83,1.55-1.83h1.171a.58.58,0,0,1,.587.571v2.993a1.073,1.073,0,0,0-.833,1.034v4.584a2.682,2.682,0,0,1-2.716,2.64h-.779V26.026h.581a1.164,1.164,0,1,0,0-2.327h-5.4a.843.843,0,1,1,0-1.686Zm-11.9,12.749a.685.685,0,0,1-.949,0,.64.64,0,0,1,0-.923l2.817-2.74a4.958,4.958,0,0,0,1.4.49Zm4.99-3.594V30.057h-.78a3.2,3.2,0,0,1-3.24-3.151V22.322a.571.571,0,0,0-1.142,0v4.584a4.328,4.328,0,0,0,4.382,4.261Zm0-1.664a6.7,6.7,0,0,1-1.818-.159,2.645,2.645,0,0,1-1.677-2.439V22.322a1.073,1.073,0,0,0-.833-1.034v-.913a2.75,2.75,0,0,1,2.915-2.814,3.075,3.075,0,0,1,2.011.7,2.682,2.682,0,0,1,.9,2.11V23.7H23.321a1.164,1.164,0,1,0,0,2.327H23.9Zm11.205,4.843V26.026H24.428v8.321a.671.671,0,0,0,1.342,0V32.036a.259.259,0,0,1,.263-.255H33.5a.259.259,0,0,1,.262.255v2.311a.671.671,0,0,0,1.342,0ZM23.321,25.516H36.214a.653.653,0,1,0,0-1.306H23.321a.653.653,0,1,0,0,1.306Zm13.091,5.652A4.328,4.328,0,0,0,40.8,26.907V22.322a.571.571,0,0,0-1.142,0v4.584a3.2,3.2,0,0,1-3.241,3.151h-.779v1.111Zm5.16,3.594a.686.686,0,0,1-.949,0L37.36,31.589a4.966,4.966,0,0,0,1.4-.49l2.817,2.74a.644.644,0,0,1,0,.923ZM22.475,11a2.089,2.089,0,1,1-2.147,2.088A2.121,2.121,0,0,1,22.475,11Z" transform="translate(-17.768 -11)" fill="#303030" fill-rule="evenodd"/></svg> My Sessions</a></li>
+
+                <li><a href=""><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g transform="translate(0 -16)"><g transform="translate(0 16)"><path d="M11.953,16C5.362,16,0,21.046,0,27.25a10.861,10.861,0,0,0,2.742,7.173,4.768,4.768,0,0,1-1.13,4.3.758.758,0,0,0,.5,1.28,7.505,7.505,0,0,0,5.37-2.314,12.515,12.515,0,0,0,4.474.814C18.544,38.5,24,33.454,24,27.25S18.544,16,11.953,16ZM6.422,29.5a2.255,2.255,0,0,1,0-4.5,2.255,2.255,0,0,1,0,4.5Zm5.625,0a2.255,2.255,0,0,1,0-4.5,2.255,2.255,0,0,1,0,4.5Zm5.625,0a2.255,2.255,0,1,1,2.109-2.25A2.186,2.186,0,0,1,17.672,29.5Z" transform="translate(0 -16)" fill="#303030"/></g></g></svg> Chat</a></li>
+              </ul>
+              <a class="lgt-btn" href=""><img src="./images/sign-out.svg" alt=""> Log out</a>
+            </div>
+          </div>
+          <div class="col-md-9">
+            <div class="row">
+              <div class="col-md-6">
+                <a  href="dashboard.html" class="d-flex align-items-center gap-2"><img class="img-fluid ms-2" src="./images/back-errow.svg" alt=""> Back to Dashboard</a>
+                <div class="celender-section mt-4">
+                  <h3>Availability</h3>
+                  
+                  <form action="#" class="open-celndr"> 
+                    <div id="inline_cal"></div> 
+                  </form>
+                    <div class="actvty-type">
+                      <div class="row">
+                        <div class="col-md-6">
+                          <p>Indicate for not available</p>
+                        </div>
+                        <div class="col-md-6">
+                          <p class="avalble">Indicate for available</p>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="book-appointment-dr">
+                  <div class="book-profile-img">
+                    <img class="profile-b" src="./images/team-1.png" alt="">
+                    <div>
+                      <span class="sp-clr">Lisa Parker</span>
+                      <h3 class="">Psychologist </h3>
+                      <p><img src="./images/like.svg" alt=""> 4.5</p>
+                    </div>
+                  </div>
+                 
+                  <div class="prices bg-white p-0">
+                    <h3 class="Con-info">Consultation Information</h3> 
+                       <div class="d-flex align-items-center gap-2 mb-4">
+                        <img src="./images/calendar.svg" alt="">
+                    <div class="avlble-time p-0 text-start">
+                      <h4>4 PM </h4>
+                      <h4><span>Chicago (GMT-6)</span></h4>
+                      <p>Thursday, 3rd March</p>
+                    </div>
+                       </div>
+                    <ul class="brdr-top py-3 mt-5">
+                      <li><strong>Consult Prices</strong> <span>$150</span></li>
+                    </ul> 
+                  </div>
+                  <div class="countdown-time clander-tim">
+                    <div id="countdown">
+                      <h6>START CALL ON</h6>
+                      <ul>
+                        <li><span id="hours"></span>Hr</li>
+                        <li><span id="minutes"></span>Min</li>
+                        <li><span id="seconds"></span>Sec</li>
+                      </ul>
+                    </div>
+                  </div>
+                  <button class="btn-primary w-100 mt-3 text-center">Chat or Video Call</button>
+                  <div class="d-flex gap-2">
+                    <button class="btn-primary w-100 mt-3 text-center">Reschedule</button>
+                    <button class="btn-primary w-100 mt-3 text-center">Cancel</button>
+                  </div>
+                </div>
+              </div>
+              
+            </div>
+         
+          </div>
+        </div> 
+      </div>
+    </section>
+
+
+
+    <footer >
+      <div class="container">
+        <div class="row">
+        <div class="col-xl-3 col-md-6">
+          <div class="logo-txt-social">
+            <img src="./images/logo.svg" alt="">
+            <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
+            <ul class="socal-icon">
+              <li><a href=""><img class="img-fluid" src="./images/insta.svg" alt=""></a></li>
+              <li><a href=""><img class="img-fluid" src="./images/tik-tok.svg" alt=""></a></li>
+              <li><a href=""><img class="img-fluid" src="./images/youtube.svg" alt=""></a></li>
+              <li><a href=""><img class="img-fluid" src="./images/facebook.svg" alt=""></a></li>
+              <li><a href=""><img class="img-fluid" src="./images/twiter.svg" alt=""></a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+          <h3>Useful Links</h3>
+          <ul>
+            <li><a href="">About Us</a></li>
+            <li><a href="">Contact Us</a></li>
+            <li><a href="">Services</a></li>
+            <li><a href="">Our Modalities</a></li>
+            <li><a href="">Learning Hub</a></li>
+            <li><a href="">Why Join Telimed</a></li>
+            <li><a href="">Blogs</a></li>
+            <li><a href="">FAQs</a></li>
+            <li><a href="">Privacy Policy</a></li>
+            <li><a href="">Terms of Service</a></li>
+          </ul>
+        </div>
+        <div class="col-xl-3 col-md-6">
+          <h3>Services</h3>
+          <ul>
+            <li><a href="">Dietition</a></li>
+            <li><a href="">Counseller</a></li>
+            <li><a href="">Naturopath</a></li>
+            <li><a href="">Yoga Instructor</a></li>
+            <li><a href="">Dietition</a></li>
+            <li><a href="">Counseller</a></li> 
+          </ul>
+        </div>
+        <div class="col-xl-3 col-md-6">
+          <h3>Subscribe</h3>
+          <form action="" class="news-ltr">
+            <input type="text" placeholder="Email">
+            <button class="btn-primary d-block w-100">Email</button>
+            <p>Get the latest updates via email. Any time
+              you may unsubscribe.</p>
+          </form>
+        </div>
+        <div class="col-md-12 copy-right-line-f">
+          <p>© 2023 by Telimed.</p>
+        </div>
+      </div>
+    </div>
+    </footer>
+     
+ 
+    <!-- Jquery needed -->
+    <script src="./js/jquery.min.js"></script>
+    <script src="./js/bootstrap.min.js"></script>  
+<script src="./js/rome.js"></script>
+
+      <script>
+        $( ".h-search-btn" ).click(function() {
+          $( ".h-srch" ).toggleClass( "slide" );
+          });
+        $(function() {
+
+rome(inline_cal, { time: false });
+
+});
+
+        $(".mobile_nav").click(function() {
+
+var mm = $(".mobile_menu"),
+    mn = $(".mobile_nav"),
+  a = "active";
+
+if (mm.hasClass(a) && mn.hasClass(a)) {
+  mm.removeClass(a).fadeOut(200);
+  mn.removeClass(a);
+  $('.mobile_menu li').each(function(){
+    $(this).removeClass('slide');
+  });
+} else {
+  mm.addClass(a).fadeIn(200);
+  mn.addClass(a);
+  $('.mobile_menu li').each(function(i){
+  var t = $(this);
+  setTimeout(function(){ t.addClass('slide'); }, (i+1) * 100);
+});
+}
+
+});
+
+ 
+
+// I've added annotations to make this easier to follow along at home. Good luck learning and check out my other pens if you found this useful
+
+
+// First let's set the colors of our sliders
+const settings={
+  fill: '#1abc9c',
+  background: '#d7dcdf'
+}
+
+// First find all our sliders
+const sliders = document.querySelectorAll('.range-slider');
+
+// Iterate through that list of sliders
+// ... this call goes through our array of sliders [slider1,slider2,slider3] and inserts them one-by-one into the code block below with the variable name (slider). We can then access each of wthem by calling slider
+Array.prototype.forEach.call(sliders,(slider)=>{
+  // Look inside our slider for our input add an event listener
+//   ... the input inside addEventListener() is looking for the input action, we could change it to something like change
+  slider.querySelector('input').addEventListener('input', (event)=>{
+    // 1. apply our value to the span
+    slider.querySelector('span').innerHTML = event.target.value;
+    // 2. apply our fill to the input
+    applyFill(event.target);
+  });
+  // Don't wait for the listener, apply it now!
+  applyFill(slider.querySelector('input'));
+});
+
+// This function applies the fill to our sliders by using a linear gradient background
+function applyFill(slider) {
+  // Let's turn our value into a percentage to figure out how far it is in between the min and max of our input
+  const percentage = 100*(slider.value-slider.min)/(slider.max-slider.min);
+  // now we'll create a linear gradient that separates at the above point
+  // Our background color will change here
+  const bg = `linear-gradient(90deg, ${settings.fill} ${percentage}%, ${settings.background} ${percentage+0.1}%)`;
+  slider.style.background = bg;
+}
+
+
+
+
+(function () {
+  const second = 1000,
+        minute = second * 60,
+        hour = minute * 60,
+        day = hour * 24;
+
+  //I'm adding this section so I don't have to keep updating this pen every year :-)
+  //remove this if you don't need it
+  let today = new Date(),
+      dd = String(today.getDate()).padStart(2, "0"),
+      mm = String(today.getMonth() + 1).padStart(2, "0"),
+      yyyy = today.getFullYear(),
+      nextYear = yyyy + 1,
+      dayMonth = "09/30/",
+      birthday = dayMonth + yyyy;
+  
+  today = mm + "/" + dd + "/" + yyyy;
+  if (today > birthday) {
+    birthday = dayMonth + nextYear;
+  }
+  //end
+  
+  const countDown = new Date(birthday).getTime(),
+      x = setInterval(function() {    
+
+        const now = new Date().getTime(),
+              distance = countDown - now;
+
+        
+          document.getElementById("hours").innerText = Math.floor((distance % (day)) / (hour)),
+          document.getElementById("minutes").innerText = Math.floor((distance % (hour)) / (minute)),
+          document.getElementById("seconds").innerText = Math.floor((distance % (minute)) / second);
+
+        //do something later when date is reached
+        if (distance < 0) {
+          document.getElementById("headline").innerText = "It's my birthday!";
+          document.getElementById("countdown").style.display = "none";
+          document.getElementById("content").style.display = "block";
+          clearInterval(x);
+        }
+        //seconds
+      }, 0)
+  }());
+
+
+
+      </script>
+   
+   
+   
+  </body>
+</html>

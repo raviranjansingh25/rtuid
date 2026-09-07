@@ -1,0 +1,8 @@
+apps:
+  - name: laravel-scheduler
+    script: php
+    args: artisan schedule:run
+    exec_mode: fork
+    cron_restart: "* * * * *" # This will run the script every minute
+    watch: false
+    autorestart: false

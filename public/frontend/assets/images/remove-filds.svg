@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="48" height="48" viewBox="0 0 48 48">
+  <defs>
+    <linearGradient id="linear-gradient" x1="1.381" y1="1.338" x2="0.028" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#2cfdb2"/>
+      <stop offset="1" stop-color="#00d2d9"/>
+    </linearGradient>
+    <filter id="Rectangle_7" x="0" y="0" width="48" height="48" filterUnits="userSpaceOnUse">
+      <feOffset dy="3" input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feFlood flood-opacity="0.161"/>
+      <feComposite operator="in" in2="blur"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+  </defs>
+  <g id="remove-filds" transform="translate(-1228 -512)">
+    <g id="remove-filds-2" data-name="remove-filds" transform="translate(20 66.499)">
+      <g transform="matrix(1, 0, 0, 1, 1208, 445.5)" filter="url(#Rectangle_7)">
+        <rect id="Rectangle_7-2" data-name="Rectangle 7" width="30" height="30" rx="15" transform="translate(9 6)" fill="url(#linear-gradient)"/>
+      </g>
+    </g>
+    <g id="add" transform="translate(1174.98 455.98)">
+      <g id="Group_447" data-name="Group 447" transform="translate(72.02 76.773)">
+        <path id="Path_85021" data-name="Path 85021" d="M82.273,232.495H72.767a.747.747,0,0,1,0-1.495h9.505a.747.747,0,0,1,0,1.495Z" transform="translate(-72.02 -231)" fill="#fff"/>
+      </g>
+    </g>
+  </g>
+</svg>

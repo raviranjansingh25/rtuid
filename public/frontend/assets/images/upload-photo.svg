@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="91" height="91" viewBox="0 0 91 91">
+  <g id="upload-photo" transform="translate(-915 -301)">
+    <circle id="upload-photo-2" data-name="upload-photo" cx="45.5" cy="45.5" r="45.5" transform="translate(915 301)" fill="#646464"/>
+    <g id="up-arrow" transform="translate(946.842 324.905)">
+      <g id="Group_482" data-name="Group 482" transform="translate(0 0)">
+        <g id="Group_481" data-name="Group 481" transform="translate(0 0)">
+          <path id="Path_85087" data-name="Path 85087" d="M90.553,12.252,78.346.3a.835.835,0,0,0-1.285,0L64.854,12.252a.964.964,0,0,0,.643,1.67h5.782V29.406a1.478,1.478,0,0,0,1.285,1.221h10.28c.514,0,.642-.642.642-1.221V13.922h6.425a.964.964,0,0,0,.642-1.67Z" transform="translate(-64.546 0)" fill="#fff"/>
+          <path id="Path_85088" data-name="Path 85088" d="M133.154,264.722h-10.28a.964.964,0,1,0,0,1.927h10.28a.964.964,0,0,0,0-1.927Z" transform="translate(-114.857 -232.168)" fill="#fff"/>
+          <path id="Path_85089" data-name="Path 85089" d="M133.154,296.069h-10.28a.964.964,0,1,0,0,1.927h10.28a.964.964,0,1,0,0-1.927Z" transform="translate(-114.857 -259.66)" fill="#fff"/>
+          <path id="Path_85090" data-name="Path 85090" d="M133.154,327.415h-10.28a.964.964,0,1,0,0,1.927h10.28a.964.964,0,1,0,0-1.927Z" transform="translate(-114.857 -287.152)" fill="#fff"/>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

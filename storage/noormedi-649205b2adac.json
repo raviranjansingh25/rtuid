@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "noormedi",
+  "private_key_id": "649205b2adacea6567bf9026355a18889def30fc",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCwYFbfh9qm8uHe\nNa/ZdyVjQ9+sUJCdi1ocm5BQtojRz1A4pamJ2tZDEp2tIw6yomNiXdvtkHQKg7at\nfpr9JF710dv8U4k6nUMZU5VwP+v31g42d+CbH3HztnCllguD4+r9DH7rlIKUTjVI\n724eq1q9h5LkM04oHAZ/8vseg8AOKAB2iM8PjitIP6II8I40TvINsr98/7mUNP2Z\naP79IkLbRFckoMDeF5HTrkaT++4e33EQn8A8wydAHQB0uek40sCCQC8XzaxQ8gn3\nv1jaH6fjjUGkadqyn3hMCKcFIRMbfr64Pj9i+rwH1NKJHzXlEx3lPuSUXcMi1v6C\ndwCuZsiRAgMBAAECggEAD47f+uXL9tAT9nr74Q3ugVwaXePZbdw9/aoHR+diGEfW\nRrjuRJfGMLJysDQYds92PtYSsVj9s3O86H7zgwLzUXHKmu5ve3kl0xUZaIZq9Tiv\nlkRqzqQudBYSx7h9mYvATcQNahB2mEhx0NY1+4SYA4HzBig0a7tVI3I2jpGGnnjp\nOOTK3BBnm8TcLgHpPCt9DoB1WWd+fUcKI4rhOjAfmXnU3ruixYzHhc7XrieVJj2X\nK+37YRLQLhWfNqU767ZKGGm5fzYXqBqdHPII1gH6lcZTBUB7gpgI2GL0htCmv5sD\n1idmWycPPDyVywUFrMShBnVk+zkbi+78r9tsfkffRQKBgQDnoKtt2viIzh9oDRg7\n9rTe5G0MM2o9ncB6xml0AfqTriwL/C9cG2j+pT0yrdgtb4wK/27qxSfrwWVRka0V\nijpEUUp3rBAhroVVIt0LpXRVNgn+ha9YlrLj/J95SB8sd1S9j4vzm8pTcafSBqCP\nF3KcHATvjGgnBiVfTJJ6eE6O0wKBgQDC718ByCsEBllxQTuBIftEGCf+OGi4BUQ5\nYJHz4m34hssMePin4qE+Fnfrg1UotqTcdPQbspUy3UU+IWzOrjATCEWQDl2hYyHb\nxp5K5rHwbLsRXV3g9bpjIy5Ula0eSyptgxFOAxXo/oO076kWlTJtuNK2yUAxTLed\n7ubxvlZUiwKBgQCbwblFiCf0ptcLuzJ+sCl0cRq7R5+7i2cxqFalQedkg4zvCkg2\nod/6zNbYS3rBIu+DPb0ydh2gNU6SiWlgwLDp29g9nSDD5X2XgHgwKrSN0GbsFq2Q\n3tWw5eG/RrZfymbbibnMuQhXEGiPnRE+57+UJmtTQpGPHFzpNq6RWHFLLQKBgC51\nI/xluzK7XKesN0VAVwTUiPuCcBqjTq4qAL7SEQlw/oVbc093qJwGeNANPcd1N/c+\nfEr5latIps724lqjktuGViXN9qyW1qPtQx5wuqmlEDREPzJ0/dXQtaL9BQQ6P8NX\nwFEKVTdxKOx/TZoPNrSFntpnPkBBm2UtYabtiN+fAoGAR3EiZ8BWgzh7oGeXBxfC\njwfvZmwSYOlVY4Ytfamg1qxP0O1cjh9CkQnKnSk1PLx/ujeRLUqcR/4v9QdO+Vis\nUY6aqlVMOwnAUkKNER/iunLIXRQP7tRQBRxbGNYD3+ZHo2F84e3wkBMnFvObDAXJ\nl8yPB/wNOGODtNVpgia5sF0=\n-----END PRIVATE KEY-----\n",
+  "client_email": "noormedicare@noormedi.iam.gserviceaccount.com",
+  "client_id": "101137321941374630230",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/noormedicare%40noormedi.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

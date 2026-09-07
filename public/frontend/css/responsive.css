@@ -1,0 +1,9 @@
+ @media only screen and (max-width: 600px) {
+ .mob-img-res{
+    width: 220px;
+    height: 220px;
+    position:relative;
+    top:-340px;
+    left:60px;
+ }
+}
