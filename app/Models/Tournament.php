@@ -49,4 +49,9 @@ class Tournament extends Model
     {
         return $this->belongsTo('App\Models\WeightCategory', 'weight_category');
     }
+
+    public function get_district()
+    {
+        return $this->belongsTo('App\Models\Tags', 'district_id');
+    }
 }

@@ -592,6 +592,8 @@ Route::group(['prefix' => 'admin', 'middleware' => 'ifadmin'], function () {
         Route::post('/tournament_edit/save/{id?}', [TournamentController::class, 'editsave'])->name('tournament_editsave');
         Route::get('/tournament', [TournamentController::class, 'index'])->name('tournament');
         Route::any('/tournament-data', [TournamentController::class, 'anydata'])->name('tournament_data');
+        Route::get('/district-tournament', [TournamentController::class, 'district_index'])->name('district_tournament');
+        Route::any('/district-tournament-data', [TournamentController::class, 'district_anydata'])->name('district_tournament_data');
         Route::get('/tournament/delete', [TournamentController::class, 'delete'])->name('tournament_delete');
         Route::get('/tournament/status', [TournamentController::class, 'changeStatus'])->name('tournament_status'); 
         Route::get('/tournament_name/{id}', [TournamentController::class, 'indexname'])->name('index_apply_tournament');
@@ -602,6 +604,8 @@ Route::group(['prefix' => 'admin', 'middleware' => 'ifadmin'], function () {
         /*---------------------apply tournament routes Start---------------------*/
         Route::get('/apply-tournament', [ApplyTournamentController::class, 'index'])->name('apply_tournament');
         Route::any('/apply-tournament-data', [ApplyTournamentController::class, 'anydata'])->name('apply_tournament_data');
+        Route::get('/district-apply-tournament', [ApplyTournamentController::class, 'district_index'])->name('district_apply_tournament');
+        Route::any('/district-apply-tournament-data', [ApplyTournamentController::class, 'district_anydata'])->name('district_apply_tournament_data');
         Route::get('/apply-tournament/status', [ApplyTournamentController::class, 'changeStatus'])->name('apply_tournament_status');
         Route::get('/apply-tournament-name/{id}', [ApplyTournamentController::class, 'indexname'])->name('apply_tournament_name');
         Route::get('/apply-tournament-name-data/{id}', [ApplyTournamentController::class, 'anydataname'])->name('apply_tournament_name_data');

@@ -204,6 +204,18 @@ class TournamentController extends Controller
         $data = array(
             'title' => 'View Tournament',
             'page_title' => 'View Tournament',
+            'ajax_url' => url('/admin/tournament-data')
+        );
+        return view('admin.tournament.view')->with($data);
+    }
+    
+    public function district_index()
+    {
+        $data = array(
+            'title' => 'View District Tournament',
+            'page_title' => 'View District Tournament',
+            'ajax_url' => url('/admin/district-tournament-data'),
+            'is_district' => true
         );
         return view('admin.tournament.view')->with($data);
     }
@@ -221,7 +233,12 @@ class TournamentController extends Controller
     public function anydata(Request $request)
     {
         $anydata = [];
-        $anydata = Tournament::orderBy('id', 'DESC')->where('status', '<', 3)->where(function ($query) use ($request) {
+        $anydata = Tournament::orderBy('id', 'DESC')->where('status', '<', 3)
+        ->where(function ($q) {
+            $q->where('is_district_tournament', '!=', 1)
+              ->orWhereNull('is_district_tournament');
+        })
+        ->where(function ($query) use ($request) {
 
             if (!empty($request['title'])) {
                 $query->where('title', 'LIKE', '%' . $request['title'] . '%');
@@ -244,6 +261,35 @@ class TournamentController extends Controller
                 $action = '<a href="' . url('/admin/tournament_name/' . $encrypted_id) . '"><i class="mdi mdi-eye text-info" title="View"></i></a>&nbsp;&nbsp;<a href="' . url('/admin/tournament/edit/' . $encrypted_id) . '"><i class="fas fa-edit" title="Edit" data-toggle="tooltip" data-placement="bottom"></i></a>  
                         
                         ';
+                return $action;
+            })
+            ->rawColumns(['status', 'action'])
+            ->addIndexColumn()->make(true);
+    }
+
+    public function district_anydata(Request $request)
+    {
+        $anydata = [];
+        $anydata = Tournament::with('get_district')->orderBy('id', 'DESC')->where('status', '<', 3)
+        ->where('is_district_tournament', 1)
+        ->where(function ($query) use ($request) {
+
+            if (!empty($request['title'])) {
+                $query->where('title', 'LIKE', '%' . $request['title'] . '%');
+            }
+
+            if (!empty($request['status'])) {
+                $query->where('status', $request['status']);
+            }
+        })->groupBy('title')->get();
+
+        return Datatables::of($anydata)
+            ->addColumn('district_name', function ($anydata) {
+                return isset($anydata['get_district']) ? $anydata['get_district']->title : 'N/A';
+            })
+            ->addColumn('action', function ($anydata) {
+                $encrypted_id = get_encrypted_value($anydata->id, true);
+                $action = '<a href="' . url('/admin/tournament_name/' . $encrypted_id) . '"><i class="mdi mdi-eye text-info" title="View"></i></a>&nbsp;&nbsp;<a href="' . url('/admin/tournament/edit/' . $encrypted_id) . '"><i class="fas fa-edit" title="Edit" data-toggle="tooltip" data-placement="bottom"></i></a>';
                 return $action;
             })
             ->rawColumns(['status', 'action'])

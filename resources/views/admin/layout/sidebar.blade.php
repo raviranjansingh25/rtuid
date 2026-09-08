@@ -82,6 +82,12 @@ $permission = $pardata->pluck('controller')->toArray();
                         <span key="t-dashboards">Apply Tournament</span>
                     </a>
                 </li>
+                <li>
+                    <a href="{{route('district_apply_tournament')}}">
+                        <i class="fas fa-user"></i>
+                        <span key="t-dashboards">District Apply Tournament</span>
+                    </a>
+                </li>
                 @endif
 
                 @if (in_array('DrawSheetController', $permission) || $admin->id==1)
@@ -115,6 +121,7 @@ $permission = $pardata->pluck('controller')->toArray();
 
                         @if (in_array('TournamentController', $permission) || $admin->id==1)
                         <li><a href="{{route('tournament')}}" key="t-full-calendar">Tournament</a></li>
+                        <li><a href="{{route('district_tournament')}}" key="t-full-calendar">District Tournament</a></li>
                         @endif
 
                         

@@ -71,9 +71,11 @@
                                     <div class="d-sm-flex align-items-center justify-content-between">
                                         <h4 class="mb-sm-0 font-size-18"></h4>
 
+                                        @if(!isset($is_district) || !$is_district)
                                         <div class="page-title-right add_button">
                                             <a href="{{route('tournament_add')}}"> <button type="button" class="btn btn-success waves-effect waves-light">Add</button></a>
                                         </div>
+                                        @endif
 
                                     </div>
                                 </div>
@@ -83,6 +85,9 @@
                                     <tr>
                                         <th>#</th>
                                         <th>Title</th>
+                                        @if(isset($is_district) && $is_district)
+                                        <th>District Name</th>
+                                        @endif
                                         <th>Start Date</th>
                                         <th>End Date</th>
                                         <!--<th>Status</th>-->
@@ -112,7 +117,7 @@
                 "bFilter": false,
 
                 ajax: {
-                    url: "{{ url('/admin/tournament-data') }}",
+                    url: "{{ isset($ajax_url) ? $ajax_url : url('/admin/tournament-data') }}",
                     data: function(d) {
                         d.title = $('input[name="title"]').val();
                         d.status = $('select[name="status"]').val();
@@ -141,6 +146,12 @@
                         data: 'title',
                         name: 'title'
                     },
+                    @if(isset($is_district) && $is_district)
+                    {
+                        data: 'district_name',
+                        name: 'district_name'
+                    },
+                    @endif
                     {
                         data: 'start_date',
                         name: 'startdate'
