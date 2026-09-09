@@ -137,6 +137,22 @@ class ApplyTournamentController extends Controller
         $data = $this->subadminViewData([
             'title' => 'View Tournament',
             'page_title' => 'View Tournament',
+            'ajax_url' => url('/subadmin/apply-tournament-data')
+        ]);
+        return view('subadmin.applytournament.view')->with($data);
+    }
+
+    public function district_index()
+    {
+        $denied = $this->denySubadminUnless($this->subadminCan('apply_tournament'));
+        if ($denied) {
+            return $denied;
+        }
+
+        $data = $this->subadminViewData([
+            'title' => 'View District Tournament',
+            'page_title' => 'View District Tournament',
+            'ajax_url' => url('/subadmin/district-apply-tournament-data')
         ]);
         return view('subadmin.applytournament.view')->with($data);
     }
@@ -161,6 +177,10 @@ class ApplyTournamentController extends Controller
         $subadmin = $this->subadmin();
         $query = Tournament::orderBy('id', 'DESC')
             ->where('status', '<', 3)
+            ->where(function ($q) {
+                $q->where('is_district_tournament', '!=', 1)
+                  ->orWhereNull('is_district_tournament');
+            })
             ->where(function ($query) use ($request) {
             if (!empty($request['title'])) {
                 $query->where('title', 'LIKE', '%' . $request['title'] . '%');
@@ -180,6 +200,43 @@ class ApplyTournamentController extends Controller
                         $userSub->select('id')->from('users')->where('district', $district);
                     });
             });
+        }
+
+        $anydata = $query->groupBy('title')->get();
+
+        return Datatables::of($anydata)
+            ->addColumn('action', function ($anydata) {
+                $encrypted_id = get_encrypted_value($anydata->id, true);
+                $action = '<a href="' . url('/subadmin/apply-tournament-name/' . $encrypted_id) . '"><i class="mdi mdi-eye text-info" title="View"></i></a>&nbsp;&nbsp;';
+                return $action;
+            })
+            ->rawColumns(['status', 'action'])
+            ->addIndexColumn()->make(true);
+    }
+
+    public function district_anydata(Request $request)
+    {
+        $subadmin = $this->subadmin();
+        $query = Tournament::orderBy('id', 'DESC')
+            ->where('status', '<', 3)
+            ->where('is_district_tournament', 1);
+            
+        if (!$this->canAccessAllDistricts($subadmin)) {
+            $query->where('district_id', $subadmin->district);
+        }
+
+        $query->where(function ($query) use ($request) {
+            if (!empty($request['title'])) {
+                $query->where('title', 'LIKE', '%' . $request['title'] . '%');
+            }
+            if (!empty($request['status'])) {
+                $query->where('status', $request['status']);
+            }
+        });
+
+        if ($this->canAccessAllDistricts($subadmin) && !empty($request['district']) && $request['district'] !== 'all') {
+            $district = $request['district'];
+            $query->where('district_id', $district);
         }
 
         $anydata = $query->groupBy('title')->get();

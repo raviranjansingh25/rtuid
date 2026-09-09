@@ -49,6 +49,12 @@
                         <span key="t-dashboards">Apply Tournament</span>
                     </a>
                 </li>
+                <li>
+                    <a href="{{route('subadmin_district_apply_tournament')}}">
+                        <i class="fas fa-trophy"></i>
+                        <span key="t-dashboards">Applied District Tournament</span>
+                    </a>
+                </li>
                 @endif
 
                 @if(!empty($subadminPermissions['can_coach']))

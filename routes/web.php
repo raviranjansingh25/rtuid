@@ -354,6 +354,8 @@ Route::group(['prefix' => 'subadmin', 'middleware' => 'ifSubadmin'], function ()
     /*---------------------apply tournament routes Start---------------------*/
     Route::get('/apply-tournament', [SubadminApplyTournamentController::class, 'index'])->name('subadmin_apply_tournament');
     Route::any('/apply-tournament-data', [SubadminApplyTournamentController::class, 'anydata'])->name('subadmin_apply_tournament_data');
+    Route::get('/district-apply-tournament', [SubadminApplyTournamentController::class, 'district_index'])->name('subadmin_district_apply_tournament');
+    Route::any('/district-apply-tournament-data', [SubadminApplyTournamentController::class, 'district_anydata'])->name('subadmin_district_apply_tournament_data');
     Route::get('/apply-tournament/status', [SubadminApplyTournamentController::class, 'changeStatus'])->name('subadmin_apply_tournament_status');
     Route::get('/apply-tournament-name/{id}', [SubadminApplyTournamentController::class, 'indexname'])->name('subadmin_apply_tournament_name');
     Route::get('/apply-tournament-name-data/{id}', [SubadminApplyTournamentController::class, 'anydataname'])->name('subadmin_apply_tournament_name_data');
