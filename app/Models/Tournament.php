@@ -12,7 +12,8 @@ class Tournament extends Model
     public function scopeAvailableForCoachWeight($query, $districtId)
     {
         return $query->where(function ($q) use ($districtId) {
-            $q->where('is_district_tournament', 0)
+            $q->where('is_district_tournament', '!=', 1)
+                ->orWhereNull('is_district_tournament')
                 ->orWhere(function ($q2) use ($districtId) {
                     $q2->where('is_district_tournament', 1)
                         ->where('district_id', $districtId)

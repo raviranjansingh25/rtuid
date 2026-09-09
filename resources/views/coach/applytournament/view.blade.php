@@ -111,7 +111,7 @@
                 "bFilter": false,
 
                 ajax: {
-                    url: "{{ url('/coach/apply-tournament-data') }}",
+                    url: "{{ isset($ajax_url) ? $ajax_url : url('/coach/apply-tournament-data') }}",
                     data: function(d) {
                         d.title = $('input[name="title"]').val();
                         d.status = $('select[name="status"]').val();

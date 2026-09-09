@@ -232,6 +232,8 @@ Route::group(['prefix' => 'coach', 'middleware' => 'vendernot'], function () {
     /*---------------------apply tournament routes Start---------------------*/
     Route::get('/apply-tournament', [CoachApplyTournamentController::class, 'index'])->name('coach_apply_tournament');
     Route::any('/apply-tournament-data', [CoachApplyTournamentController::class, 'anydata'])->name('coach_apply_tournament_data');
+    Route::get('/district-apply-tournament', [CoachApplyTournamentController::class, 'district_index'])->name('coach_district_apply_tournament');
+    Route::any('/district-apply-tournament-data', [CoachApplyTournamentController::class, 'district_anydata'])->name('coach_district_apply_tournament_data');
     Route::get('/apply-tournament/status', [CoachApplyTournamentController::class, 'changeStatus'])->name('coach_apply_tournament_status');
     Route::get('/apply-tournament-name/{id}', [CoachApplyTournamentController::class, 'indexname'])->name('coach_apply_tournament_name');
     Route::get('/apply-tournament-name-data/{id}', [CoachApplyTournamentController::class, 'anydataname'])->name('coach_apply_tournament_name_data');

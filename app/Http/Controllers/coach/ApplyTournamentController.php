@@ -147,6 +147,21 @@ class ApplyTournamentController extends Controller
         $data = array(
             'title' => 'View Tournament',
             'page_title' => 'View Tournament',
+            'ajax_url' => url('/coach/apply-tournament-data')
+        );
+        return view('coach.applytournament.view')->with($data);
+    }
+
+    public function district_index()
+    {
+        if ($this->denyIfCoachApplyStopped()) {
+            return redirect()->route('coach_dashboard')->withErrors('Tournament apply has been stopped by subadmin.');
+        }
+
+        $data = array(
+            'title' => 'View District Tournament',
+            'page_title' => 'View District Tournament',
+            'ajax_url' => url('/coach/district-apply-tournament-data')
         );
         return view('coach.applytournament.view')->with($data);
     }
@@ -172,7 +187,12 @@ class ApplyTournamentController extends Controller
         }
 
         $anydata = [];
-        $anydata = Tournament::orderBy('id', 'DESC')->where('status', '<', 3)->where(function ($query) use ($request) {
+        $anydata = Tournament::orderBy('id', 'DESC')->where('status', '<', 3)
+        ->where(function ($q) {
+            $q->where('is_district_tournament', '!=', 1)
+              ->orWhereNull('is_district_tournament');
+        })
+        ->where(function ($query) use ($request) {
 
             if (!empty($request['title'])) {
                 $query->where('title', 'LIKE', '%' . $request['title'] . '%');
@@ -191,6 +211,40 @@ class ApplyTournamentController extends Controller
                 $action = '<a href="' . url('/coach/apply-tournament-name/' . $encrypted_id) . '"><i class="mdi mdi-eye text-info" title="View"></i></a>&nbsp;&nbsp;  
                         
                         ';
+                return $action;
+            })
+            ->rawColumns(['status', 'action'])
+            ->addIndexColumn()->make(true);
+    }
+
+    public function district_anydata(Request $request)
+    {
+        if ($this->denyIfCoachApplyStopped()) {
+            return response()->json(['data' => []]);
+        }
+
+        $coach = auth()->guard('vender')->user();
+
+        $anydata = [];
+        $anydata = Tournament::orderBy('id', 'DESC')->where('status', '<', 3)
+        ->where('is_district_tournament', 1)
+        ->where('district_id', $coach->district)
+        ->where(function ($query) use ($request) {
+
+            if (!empty($request['title'])) {
+                $query->where('title', 'LIKE', '%' . $request['title'] . '%');
+            }
+
+            if (!empty($request['status'])) {
+                $query->where('status', $request['status']);
+            }
+        })->groupBy('title')->get();
+
+        return Datatables::of($anydata)
+        
+            ->addColumn('action', function ($anydata) {
+                $encrypted_id = get_encrypted_value($anydata->id, true);
+                $action = '<a href="' . url('/coach/apply-tournament-name/' . $encrypted_id) . '"><i class="mdi mdi-eye text-info" title="View"></i></a>&nbsp;&nbsp;';
                 return $action;
             })
             ->rawColumns(['status', 'action'])

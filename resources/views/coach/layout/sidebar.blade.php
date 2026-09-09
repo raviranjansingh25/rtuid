@@ -47,6 +47,13 @@ $admin= Auth::guard('vender')->user();
                     </a>
                 </li>
                 
+                <li>
+                    <a href="{{route('coach_district_apply_tournament')}}">
+                        <i class="fas fa-trophy"></i>
+                        <span key="t-dashboards">Applied District Tournament</span>
+                    </a>
+                </li>
+                
                 
             </ul>
         </div>
