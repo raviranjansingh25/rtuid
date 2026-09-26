@@ -71,6 +71,10 @@ class ApplyTournamentController extends Controller
             ->where('gender', $user->gender)
             ->where('category', $user->category)
             ->where('weight_category', $waight_category->id)
+            ->where(function ($q) {
+                $q->where('is_district_tournament', '!=', 1)
+                    ->orWhereNull('is_district_tournament');
+            })
             ->get();
         
         $saveurl = url('subadmin/apply-tournament-name_edit_save/' . $id);
@@ -359,6 +363,9 @@ class ApplyTournamentController extends Controller
 
         $user = User::find($request['user_id']);
         $turnament = Tournament::with('get_category')->find($request['tournament_id']);
+        if (!empty($turnament->is_district_tournament)) {
+            return response()->json(['status' => 'failed', 'message' => 'District tournament weight is filled by the district coach.'], 403);
+        }
         $apply = ApplyTournament::where('user_id',$request['user_id'])->where('turnament_id',$request['tournament_id'])->first();
         if(!empty($apply)){
             return response()->json(['status' => 'failed']);
@@ -437,6 +444,10 @@ class ApplyTournamentController extends Controller
                 ->where('gender', $user->gender)
                 ->whereIn('category', $category)
                 ->whereIn('weight_category', $waight_category)
+                ->where(function ($q) {
+                    $q->where('is_district_tournament', '!=', 1)
+                        ->orWhereNull('is_district_tournament');
+                })
                 ->get();
                 
             return response()->json($tournaments);

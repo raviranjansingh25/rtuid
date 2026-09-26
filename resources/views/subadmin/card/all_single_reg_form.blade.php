@@ -39,12 +39,16 @@
         color: #000;
     }
 
-    .heading    {     top: 116px;
-    /* left: 218px; */
-    font-weight: 800;
-    text-align: center;
-    width: 100%;
-    font-size: 22px; }
+    .heading {
+        top: 132px;
+        left: 7%;
+        width: 86%;
+        font-weight: 800;
+        text-align: center;
+        font-size: 15px;
+        line-height: 1.2;
+        overflow-wrap: anywhere;
+    }
     .player-uid     { top: 298px; left: 230px; }
     .it-uid         { top: 327px; left: 230px; }
     .district       { top: 358px; left: 230px; }
@@ -90,6 +94,22 @@
     button:hover {
         background: #0056b3;
     }
+
+    .is-district-form .heading { top: 168px; left: 8%; font-size: 14px; width: 84%; line-height: 1.2; }
+    .is-district-form .player-uid { top: 304px; left: 218px; }
+    .is-district-form .it-uid { top: 334px; left: 218px; }
+    .is-district-form .district { top: 364px; left: 218px; }
+    .is-district-form .full-name { top: 394px; left: 218px; }
+    .is-district-form .father-name { top: 424px; left: 218px; }
+    .is-district-form .gender { top: 454px; left: 218px; }
+    .is-district-form .dob { top: 484px; left: 218px; }
+    .is-district-form .coach-name { top: 514px; left: 218px; }
+    .is-district-form .coach-contact { top: 544px; left: 218px; }
+    .is-district-form .category { top: 574px; left: 218px; }
+    .is-district-form .weight { top: 604px; left: 218px; }
+    .is-district-form .weight-cat { top: 634px; left: 218px; }
+    .is-district-form .address { top: 664px; left: 218px; }
+    .is-district-form .player-photo { top: 277px; left: 454px; width: 99px; height: 107px; line-height: 107px; }
 </style>
 
 <div class="main-content">
@@ -113,8 +133,8 @@
             $user = App\Models\User::find($data->user_id);
             $applytur = App\Models\Tournament::find($data->turnament_id);
             @endphp
-            <div class="form-container" >
-                <img src="{{ asset('storage/form.jpeg') }}" class="form-image" alt="Form Template">
+            <div class="form-container {{ !empty($applytur->is_district_tournament) ? 'is-district-form' : '' }}">
+                <img src="{{ asset(!empty($applytur->is_district_tournament) ? 'storage/district_form.png' : 'storage/form.jpeg') }}" class="form-image" alt="Form Template">
                 <h2 class="field heading">{{ $applytur->title ?? '-' }}</h2>
                 <div class="field player-uid">{{ $user->code_id ?? '-' }}</div>
                 <div class="field it-uid">{{ $user->it_uid ?? '-' }}</div>

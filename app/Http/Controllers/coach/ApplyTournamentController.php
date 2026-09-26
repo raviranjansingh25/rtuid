@@ -229,6 +229,8 @@ class ApplyTournamentController extends Controller
         $anydata = Tournament::orderBy('id', 'DESC')->where('status', '<', 3)
         ->where('is_district_tournament', 1)
         ->where('district_id', $coach->district)
+        ->where('district_apply_open', 1)
+        ->where('coach_apply_weight_open', 1)
         ->where(function ($query) use ($request) {
 
             if (!empty($request['title'])) {
@@ -365,15 +367,13 @@ class ApplyTournamentController extends Controller
         $user = User::find($request['user_id']);
         $turnament = Tournament::with('get_category')->find($request['tournament_id']);
         // p($turnament);
-        if (!empty($turnament->is_district_tournament)) {
-            $coach = auth()->guard('vender')->user();
-            if (
-                empty($turnament->district_apply_open)
-                || empty($turnament->coach_apply_weight_open)
-                || (string) $turnament->district_id !== (string) ($coach->district ?? '')
-            ) {
-                return response()->json(['status' => 'failed', 'message' => 'Coach weight apply is not open for this tournament.'], 403);
-            }
+        if (
+            empty($turnament->is_district_tournament)
+            || empty($turnament->district_apply_open)
+            || empty($turnament->coach_apply_weight_open)
+            || (string) $turnament->district_id !== (string) ($coach->district ?? '')
+        ) {
+            return response()->json(['status' => 'failed', 'message' => 'Coach weight apply is not open for this tournament.'], 403);
         }
         $apply = ApplyTournament::where('user_id',$request['user_id'])->where('turnament_id',$request['tournament_id'])->first();
         if(!empty($apply)){

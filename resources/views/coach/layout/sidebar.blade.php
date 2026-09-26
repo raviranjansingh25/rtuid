@@ -41,13 +41,6 @@ $admin= Auth::guard('vender')->user();
 
                 
                 <li>
-                    <a href="{{route('coach_apply_tournament')}}">
-                        <i class="fas fa-user"></i>
-                        <span key="t-dashboards">Applied View Tournament</span>
-                    </a>
-                </li>
-                
-                <li>
                     <a href="{{route('coach_district_apply_tournament')}}">
                         <i class="fas fa-trophy"></i>
                         <span key="t-dashboards">Applied District Tournament</span>

@@ -94,11 +94,12 @@
         text-transform: uppercase;
     }
 
-    /* Name positioning above the line */
+    /* Name sits just above the printed line */
     .coach-name {
-        top: 45.2%;
+        top: 41.5%;
         left: 4.8%;
         font-size: 3.8cqw;
+        line-height: 1;
         color: #0c1b33;
         font-weight: 800;
         letter-spacing: 0.5px;

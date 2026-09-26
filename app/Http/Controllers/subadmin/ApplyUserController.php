@@ -246,6 +246,10 @@ class ApplyUserController extends Controller
                     ->where('start_date', '<=', $current_date)
                     ->where('end_date', '>=', $current_date)
                     ->where('gender', $anydata->gender)
+                    ->where(function ($q) {
+                        $q->where('is_district_tournament', '!=', 1)
+                            ->orWhereNull('is_district_tournament');
+                    })
                     ->pluck('id')->toArray();
             
                 if (!empty($tournaments)) {

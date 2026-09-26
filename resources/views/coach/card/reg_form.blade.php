@@ -37,12 +37,15 @@
         font-weight: 100;
         color: #000;
     }
-    .heading{     
-        top: 116px;
+    .heading{
+        top: 132px;
+        left: 7%;
+        width: 86%;
         font-weight: 800;
         text-align: center;
-        width: 100%;
-        font-size: 22px; 
+        font-size: 15px;
+        line-height: 1.2;
+        overflow-wrap: anywhere;
     }
 
     .player-uid     { top: 298px; left: 230px; }
@@ -90,6 +93,22 @@
     button:hover {
         background: #0056b3;
     }
+
+    .is-district-form .heading { top: 168px; left: 8%; font-size: 14px; width: 84%; line-height: 1.2; }
+    .is-district-form .player-uid { top: 304px; left: 218px; }
+    .is-district-form .it-uid { top: 334px; left: 218px; }
+    .is-district-form .district { top: 364px; left: 218px; }
+    .is-district-form .full-name { top: 394px; left: 218px; }
+    .is-district-form .father-name { top: 424px; left: 218px; }
+    .is-district-form .gender { top: 454px; left: 218px; }
+    .is-district-form .dob { top: 484px; left: 218px; }
+    .is-district-form .coach-name { top: 514px; left: 218px; }
+    .is-district-form .coach-contact { top: 544px; left: 218px; }
+    .is-district-form .category { top: 574px; left: 218px; }
+    .is-district-form .weight { top: 604px; left: 218px; }
+    .is-district-form .weight-cat { top: 634px; left: 218px; }
+    .is-district-form .address { top: 664px; left: 218px; }
+    .is-district-form .player-photo { top: 277px; left: 454px; width: 99px; height: 107px; line-height: 107px; }
 </style>
 
 <div class="main-content">
@@ -99,8 +118,8 @@
                 <button onclick="downloadPDF()">Download PDF</button>
             </div>
 
-            <div class="form-container" id="contentToPrint">
-                <img src="{{ asset('storage/form.jpeg') }}" class="form-image" alt="Form Template">
+            <div class="form-container {{ !empty($tur->is_district_tournament) ? 'is-district-form' : '' }}" id="contentToPrint">
+                <img src="{{ asset(!empty($tur->is_district_tournament) ? 'storage/district_form.png' : 'storage/form.jpeg') }}" class="form-image" alt="Form Template">
 
                 <div class="form-overlay">
                     <h2 class="field heading">{{ $tur->title ?? '-' }}</h2>

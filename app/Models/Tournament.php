@@ -11,16 +11,10 @@ class Tournament extends Model
 
     public function scopeAvailableForCoachWeight($query, $districtId)
     {
-        return $query->where(function ($q) use ($districtId) {
-            $q->where('is_district_tournament', '!=', 1)
-                ->orWhereNull('is_district_tournament')
-                ->orWhere(function ($q2) use ($districtId) {
-                    $q2->where('is_district_tournament', 1)
-                        ->where('district_id', $districtId)
-                        ->where('district_apply_open', 1)
-                        ->where('coach_apply_weight_open', 1);
-                });
-        });
+        return $query->where('is_district_tournament', 1)
+            ->where('district_id', $districtId)
+            ->where('district_apply_open', 1)
+            ->where('coach_apply_weight_open', 1);
     }
 
     public function scopeAvailableForAthleteApply($query, $districtId)
