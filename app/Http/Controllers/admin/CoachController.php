@@ -85,6 +85,11 @@ class CoachController extends Controller
                     $data->password      = Hash::make($request['e_password']);
                 }
                 $data->save();
+
+                $tag = Tags::find($data->district);
+                $shortCode = ($tag && !empty($tag->short_code)) ? $tag->short_code : 'XX';
+                $data->code = 'RTUID/' . $shortCode . '/COACH/' . (100 + $data->id);
+                $data->save();
             } catch (\Exception $e) {
                 DB::rollback();
                 $error_message = $e->getMessage();

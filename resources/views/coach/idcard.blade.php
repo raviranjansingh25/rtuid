@@ -109,8 +109,9 @@
     .coach-id {
         top: 55.6%;
         left: 28%;
-        font-size: 3.2cqw;
+        font-size: 2.5cqw;
         color: #1a1a1a;
+        letter-spacing: 0;
     }
 
     .father-name {
@@ -244,7 +245,7 @@
                                 <div class="id-card-frame front-card" id="card-front">
                                     <!-- Dynamic overlay values -->
                                     <div class="card-value coach-name">{{ $coach->name }}</div>
-                                    <div class="card-value coach-id">CH-{{ sprintf('%05d', $coach->id) }}</div>
+                                    <div class="card-value coach-id">{{ !empty($coach->code) ? $coach->code : 'RTUID/COACH/' . (100 + $coach->id) }}</div>
                                     <div class="card-value father-name">{{ $coach->father_name }}</div>
                                     <div class="card-value dob-val">{{ $coach->dob }}</div>
                                     <div class="card-value grade-val">{{ $coach->grade }}</div>
