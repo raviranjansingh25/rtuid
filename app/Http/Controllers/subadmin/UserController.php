@@ -359,17 +359,26 @@ class UserController extends Controller
 
     public function changeStatus(Request $request)
     {
-        if ($denied = $this->denyAllDistrictWrite()) {
+        $admin = $this->subadmin();
+        $id = $request['id'];
+        $status = $request['status'];
+        $data = User::find($id);
+
+        if (!$data) {
+            return response('Athlete not found', 404);
+        }
+
+        if (!$this->canAccessAllDistricts($admin) && (string) $data->district !== (string) $admin->district) {
             return response('Permission denied', 403);
         }
-        $id   = $request['id'];
-        $status = $request['status'];
-        $data  =  User::find($id);
-        if ($data) {
-            $data->status = $status;
-            $data->save();
-            echo "Success";
+
+        if (!in_array((int) $status, [1, 2, 4], true)) {
+            return response('Invalid status', 422);
         }
+
+        $data->status = $status;
+        $data->save();
+        echo "Success";
     }
 
     public function detail(Request $request, $id)

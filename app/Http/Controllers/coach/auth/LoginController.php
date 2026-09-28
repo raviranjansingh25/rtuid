@@ -96,7 +96,7 @@ class LoginController extends Controller
       $profile= Auth::guard('vender')->user();
       $data = array(
         'title' =>'Update Profile', 
-        'saveurl' =>route('update_profile'), 
+        'saveurl' =>route('coach_update_profile'), 
         'profile' => $profile,
       );
       return view('coach.auth.profile_updeate')->with($data);
@@ -108,14 +108,14 @@ class LoginController extends Controller
             if(!empty($request->image)) {
                 $image = $request->file('image');
                 $img_name = rand(11111, 99999) . '.' . $image->getClientOriginalExtension();
-                $request->file('image')->move("uploads/profile", $img_name);
-                $profile->image = 'uploads/profile/'.$img_name;
+                $request->file('image')->move('uploads/coach', $img_name);
+                $profile->image = 'uploads/coach/'.$img_name;
             }
 
-            $profile->name  = $request['name'];
-            $profile->email  = $request['email'];
-            $profile->phone      = $request['phone'];
-            $profile->country_code      = (int)$request['country_code'];
+            $profile->email = $request['email'];
+            $profile->father_name = $request['father_name'];
+            $profile->dob = $request['dob'];
+            $profile->grade = $request['grade'];
             $profile->save();
             return back()->withSuccess("Profile Updated Successfully.");
          }

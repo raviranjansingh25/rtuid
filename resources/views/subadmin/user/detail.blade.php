@@ -166,12 +166,12 @@
                                                             <button class="btn btn-{{$color}} dropdown-toggle btn-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                                                 {{ $text }}
                                                             </button>
-                                                            <!--<div class="dropdown-menu">-->
-                                                            <!--    <a class="dropdown-item" href="#" onclick="changeStatus({{$user->id}},2)">Pending</a>-->
-                                                            <!--    <a class="dropdown-item" href="#" onclick="changeStatus({{$user->id}},1)">Approved</a>-->
-                                                            <!--    <div class="dropdown-divider"></div>-->
-                                                            <!--    <a class="dropdown-item" onclick="changeStatus({{$user->id}},4)" href="#">Reject</a>-->
-                                                            <!--</div>-->
+                                                            <div class="dropdown-menu">
+                                                                <a class="dropdown-item" href="#" onclick="changeStatus({{$user->id}},2); return false;">Pending</a>
+                                                                <a class="dropdown-item" href="#" onclick="changeStatus({{$user->id}},1); return false;">Approved</a>
+                                                                <div class="dropdown-divider"></div>
+                                                                <a class="dropdown-item" onclick="changeStatus({{$user->id}},4); return false;" href="#">Reject</a>
+                                                            </div>
                                                         </div>
                                                 </td></tr>
                                         </tbody>
@@ -275,7 +275,7 @@
          var token = '{!!csrf_token()!!}';
 
          $.ajax({
-             url: "{{ url('coach/user/status') }}",
+             url: "{{ url('subadmin/user/status') }}",
              type: 'GET',
              data: {
                  'id': id,

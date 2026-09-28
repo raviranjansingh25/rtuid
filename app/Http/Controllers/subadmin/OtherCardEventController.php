@@ -32,7 +32,7 @@ class OtherCardEventController extends Controller
             'tur' => $tur
          );
     
-        return view('coach.card.reg_form')->with($data);
+        return view('subadmin.card.reg_form')->with($data);
     }
 
     public function single_card($id){
@@ -48,7 +48,7 @@ class OtherCardEventController extends Controller
             'tur' => $tur,
             'apply' => $apply
          );
-        return view('coach.card.single_card')->with($data);
+        return view('subadmin.card.single_card')->with($data);
     }
 
     public function all_single_reg_form(Request $request,$id){
@@ -56,7 +56,7 @@ class OtherCardEventController extends Controller
             'title' =>"Applied Group Tournament",
             'event_id' =>$id,
         );
-        return view('coach.card.all_single_reg_form')->with($data);
+        return view('subadmin.card.all_single_reg_form')->with($data);
     }
 
     public function all_single_card(Request $request,$id){
@@ -64,6 +64,6 @@ class OtherCardEventController extends Controller
             'title' =>"Applied Group Tournament",
             'event_id' =>$id,
         );
-        return view('coach.card.all_single_card')->with($data);
+        return view('subadmin.card.all_single_card')->with($data);
     }
 }

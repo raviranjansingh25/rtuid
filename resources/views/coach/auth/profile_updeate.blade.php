@@ -15,7 +15,7 @@
 
                         <div class="page-title-right">
                             <ol class="breadcrumb m-0">
-                                <li class="breadcrumb-item"><a href="{{route('admin_dashboard')}}">Dashboard</a></li>
+                                <li class="breadcrumb-item"><a href="{{route('coach_dashboard')}}">Dashboard</a></li>
                                 <!-- <li class="breadcrumb-item">{{$title}}</li> -->
                             </ol>
                         </div>
@@ -43,13 +43,19 @@
                         <div class="card-body">
                             <form method="post" id="settingform" action="{{$saveurl}}" enctype="multipart/form-data">
                                 @csrf
-                                <div class="mb-3">
-                                    <label for="formrow-firstname-input" class="form-label">Name <span class="text-danger">*</span></label>
-                                    <input type="text" name="name" value="{{ old('name',isset($profile->name) ? $profile->name : '' )}}" class="form-control" id="formrow-firstname-input" placeholder="Enter Your Full Name">
-                                </div>
-
                                 <div class="row">
-                                    
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Name</label>
+                                            <input type="text" value="{{ $profile->name ?? '' }}" class="form-control" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Mobile Number</label>
+                                            <input type="text" value="{{ $profile->phone ?? '' }}" class="form-control" readonly>
+                                        </div>
+                                    </div>
                                     <div class="col-md-6">
                                         <div class="mb-3">
                                             <label for="formrow-email-input" class="form-label">Email <span class="text-danger">*</span></label>
@@ -58,12 +64,22 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label for="formrow-password-input" class="form-label">Phone <span class="text-danger">*</span></label>
-                                            <input type="phone" id="mobile_code" name="phone" value="{{ old('phone',isset($profile->phone) ? '+'.$profile->country_code.' '.$profile->phone : '' )}}" class="form-control" id="formrow-password-input" placeholder="Enter Your Phone Number">
+                                            <label class="form-label">Father Name</label>
+                                            <input type="text" name="father_name" value="{{ old('father_name', $profile->father_name ?? '') }}" class="form-control" placeholder="Enter Father Name">
                                         </div>
                                     </div>
-
-                                    <input type="hidden" name="country_code" class="country_code">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Date of Birth</label>
+                                            <input type="date" name="dob" value="{{ old('dob', $profile->dob ?? '') }}" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Grade</label>
+                                            <input type="text" name="grade" value="{{ old('grade', $profile->grade ?? '') }}" class="form-control" placeholder="Enter Grade">
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <div class="row">
@@ -71,7 +87,7 @@
                                     <div class="col-md-4">
                                         <div class="card-body">
                                             <div class="form-group">
-                                              <label>Profile</label><br>
+                                              <label>Photo</label><br>
                                               <input type="file" id="input-file-now" accept="image/*" name="image" class="dropify" data-default-file="{{isset($profile->image) ? url($profile->image) : ''}}"/>
                                             </div>
                                           </div>
@@ -105,14 +121,10 @@
         },
 
         rules: {
-            'name': {required: true},
             'email': {required: true},
-            'phone': {required: true},
         },
         messages: {
-            'name': "Please Enter full name.",        
-            'email': "Please Enter email address.",        
-            'phone': "Please Enter phone number.",        
+            'email': "Please Enter email address.",
         },
         errorPlacement: function(error, element) {
             if (element.attr("name") == "data[Payment][phone]") {
@@ -125,8 +137,6 @@
       submitHandler: function(form) {
 
         if (this.valid()){
-            var country_code = $('.iti__selected-dial-code').html();
-            $('.country_code').val(country_code);
             $('.confirm-reservation-cart').attr("disabled", "disabled");
             
             form.submit();
