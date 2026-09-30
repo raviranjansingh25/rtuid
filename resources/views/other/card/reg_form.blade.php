@@ -38,13 +38,20 @@
         color: #000;
     }
     .heading{
-        top: 115px;
-        left: 7%;
-        width: 86%;
+        top: 118px;
+        left: 6%;
+        width: 88%;
+        height: 56px;
+        margin: 0;
+        padding: 0 6px;
+        box-sizing: border-box;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         font-weight: 800;
         text-align: center;
         font-size: 20px;
-        line-height: 1.2;
+        line-height: 1.15;
         overflow-wrap: anywhere;
     }
 
@@ -94,7 +101,7 @@
         background: #0056b3;
     }
 
-    .is-district-form .heading { top: 115px; left: 7%; font-size: 20px; width: 86%; line-height: 1.2; }
+    .is-district-form .heading { top: 132px; left: 6%; width: 88%; height: 52px; font-size: 20px; line-height: 1.15; }
     .is-district-form .player-uid { top: 304px; left: 218px; }
     .is-district-form .it-uid { top: 334px; left: 218px; }
     .is-district-form .district { top: 364px; left: 218px; }
@@ -154,7 +161,26 @@
 
 <script>
     // Scale the overlay based on container width
+    function fitTournamentTitle() {
+        document.querySelectorAll('.heading').forEach(function (el) {
+            var band = el.closest('.is-district-form') ? 52 : 56;
+            el.style.display = 'block';
+            el.style.height = 'auto';
+            var size = 28;
+            el.style.fontSize = size + 'px';
+            while (el.offsetHeight > band && size > 16) {
+                size -= 1;
+                el.style.fontSize = size + 'px';
+            }
+            el.style.display = 'flex';
+            el.style.alignItems = 'center';
+            el.style.justifyContent = 'center';
+            el.style.height = band + 'px';
+        });
+    }
+
     function scaleOverlay() {
+        fitTournamentTitle();
         const container = document.querySelector('.form-container');
         const overlay = document.querySelector('.form-overlay');
 
