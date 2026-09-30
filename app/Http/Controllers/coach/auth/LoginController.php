@@ -115,7 +115,7 @@ class LoginController extends Controller
             $profile->email = $request['email'];
             $profile->father_name = $request['father_name'];
             $profile->dob = $request['dob'];
-            $profile->grade = $request['grade'];
+            $profile->address = $request['address'];
             $profile->save();
             return back()->withSuccess("Profile Updated Successfully.");
          }

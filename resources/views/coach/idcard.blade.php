@@ -277,7 +277,7 @@
                                             -
                                         @endif
                                     </div>
-                                    <div class="card-value address-text">{{ $district_name }}</div>
+                                    <div class="card-value address-text">{{ !empty($coach->address) ? $coach->address : $district_name }}</div>
                                 </div>
                             </div>
 

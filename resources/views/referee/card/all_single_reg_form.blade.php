@@ -45,7 +45,7 @@
         width: 86%;
         font-weight: 800;
         text-align: center;
-        font-size: 18px;
+        font-size: 24px;
         line-height: 1.2;
         overflow-wrap: anywhere;
     }
@@ -95,7 +95,7 @@
         background: #0056b3;
     }
 
-    .is-district-form .heading { top: 168px; left: 8%; font-size: 18px; width: 84%; line-height: 1.2; }
+    .is-district-form .heading { top: 168px; left: 8%; font-size: 24px; width: 84%; line-height: 1.2; }
     .is-district-form .player-uid { top: 304px; left: 218px; }
     .is-district-form .it-uid { top: 334px; left: 218px; }
     .is-district-form .district { top: 364px; left: 218px; }

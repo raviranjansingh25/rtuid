@@ -76,8 +76,8 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label class="form-label">Grade</label>
-                                            <input type="text" name="grade" value="{{ old('grade', $profile->grade ?? '') }}" class="form-control" placeholder="Enter Grade">
+                                            <label class="form-label">Address</label>
+                                            <textarea name="address" class="form-control" rows="2" placeholder="Enter Address">{{ old('address', $profile->address ?? '') }}</textarea>
                                         </div>
                                     </div>
                                 </div>
