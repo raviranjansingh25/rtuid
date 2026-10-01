@@ -416,8 +416,43 @@
 
         .champion-container {
             text-align: center;
-            margin-top: 40px;
+            margin-top: 16px;
             position: relative;
+            border: none !important;
+            box-shadow: none !important;
+            background: transparent !important;
+            min-width: 0 !important;
+            width: auto;
+        }
+        .champion-container .champion {
+            border: none;
+            box-shadow: none;
+            background: transparent;
+            min-width: 0;
+            padding: 4px 0;
+        }
+        .podium-wrap {
+            display: flex;
+            justify-content: flex-end;
+            margin: 8px 24px 0 0;
+        }
+        .podium {
+            width: 260px;
+            border-collapse: collapse;
+            margin: 0;
+        }
+        .podium td {
+            border: 1px solid #c8c8c8;
+            padding: 6px 8px;
+            font-size: 13px;
+            text-align: left;
+            background: #fff;
+            color: #222;
+            height: 26px;
+        }
+        .podium .podium-place {
+            width: 48px;
+            font-weight: 500;
         }
         .match_data {
                 margin-bottom: 16px;
@@ -639,31 +674,45 @@
             border: 1px solid #cfcfcf;
         }
 
-        .sheet-xl .match, .sheet-xl .match2 { min-width: 440px; }
-        .sheet-xl .team { height: auto; min-height: 56px; max-width: none; font-size: 18px; padding: 8px 12px; }
-        .sheet-xl .dist { font-size: 14px; }
-        .sheet-xl strong { font-size: 20px; }
+        .sheet-xl .match, .sheet-xl .match2 { min-width: 520px; }
+        .sheet-xl .team { height: auto; min-height: 68px; max-width: none; font-size: 20px; padding: 10px 14px; }
+        .sheet-xl .dist { font-size: 16px; }
+        .sheet-xl strong { font-size: 22px; }
 
-        .sheet-lg .match, .sheet-lg .match2 { min-width: 340px; }
-        .sheet-lg .team { height: auto; min-height: 46px; max-width: none; font-size: 16px; padding: 6px 10px; }
-        .sheet-lg .dist { font-size: 13px; }
-        .sheet-lg strong { font-size: 17px; }
+        .sheet-lg .match, .sheet-lg .match2 { min-width: 420px; }
+        .sheet-lg .team { height: auto; min-height: 56px; max-width: none; font-size: 18px; padding: 8px 12px; }
+        .sheet-lg .dist { font-size: 14px; }
+        .sheet-lg strong { font-size: 19px; }
 
-        .sheet-md .match, .sheet-md .match2 { min-width: 260px; }
-        .sheet-md .team { height: auto; min-height: 38px; max-width: none; font-size: 14px; padding: 4px 8px; }
-        .sheet-md .dist { font-size: 12px; }
-        .sheet-md strong { font-size: 15px; }
+        .sheet-md .match, .sheet-md .match2 { min-width: 340px; }
+        .sheet-md .team { height: auto; min-height: 48px; max-width: none; font-size: 16px; padding: 6px 10px; }
+        .sheet-md .dist { font-size: 13px; }
+        .sheet-md strong { font-size: 17px; }
 
-        .sheet-sm .match, .sheet-sm .match2 { min-width: 200px; }
-        .sheet-sm .team { height: 32px; max-width: none; font-size: 12px; padding: 2px 6px; }
-        .sheet-sm .dist { font-size: 10px; }
-        .sheet-sm strong { font-size: 12px; }
+        .sheet-sm .match, .sheet-sm .match2 { min-width: 280px; }
+        .sheet-sm .team { height: auto; min-height: 40px; max-width: none; font-size: 14px; padding: 4px 8px; }
+        .sheet-sm .dist { font-size: 12px; }
+        .sheet-sm strong { font-size: 15px; }
 
-        .sheet-xs .match, .sheet-xs .match2 { min-width: 158px; }
-        .sheet-xs .team { height: 24px; max-width: none; font-size: 11px; padding: 0 4px; }
-        .sheet-xs .dist { font-size: 9px; margin-top: -4px; }
-        .sheet-xs strong { font-size: 11px; }
-        .sheet-xs .bracket { gap: 56px; }
+        .sheet-xs .match, .sheet-xs .match2 { min-width: 220px; }
+        .sheet-xs .team { height: auto; min-height: 32px; max-width: none; font-size: 12px; padding: 2px 6px; }
+        .sheet-xs .dist { font-size: 10px; }
+        .sheet-xs strong { font-size: 13px; }
+        .sheet-xs .bracket { gap: 64px; }
+
+        @page {
+            size: A4 landscape;
+            margin: 8mm;
+        }
+        @media print {
+            .reset-btn_div { display: none !important; }
+            .main-content, .page-content, .container-fluid, .tournament-container {
+                min-width: 0 !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+        }
                     
                     
     </style>
@@ -694,13 +743,13 @@
                         + count($matches['quarterfinalMatches'] ?? [])
                         + count($matches['semifinalMatches'] ?? [])
                         + count($matches['finalMatches'] ?? []);
-                    if ($sheetMatchCount <= 1) {
+                    if ($sheetMatchCount <= 2) {
                         $sheetSize = 'sheet-xl';
-                    } elseif ($sheetMatchCount <= 3) {
+                    } elseif ($sheetMatchCount <= 5) {
                         $sheetSize = 'sheet-lg';
-                    } elseif ($sheetMatchCount <= 6) {
+                    } elseif ($sheetMatchCount <= 9) {
                         $sheetSize = 'sheet-md';
-                    } elseif ($sheetMatchCount <= 12) {
+                    } elseif ($sheetMatchCount <= 16) {
                         $sheetSize = 'sheet-sm';
                     } else {
                         $sheetSize = 'sheet-xs';
@@ -1046,39 +1095,25 @@
                 </div>
             @endif
                 
-            <div class="">
-                    <h2 class="tournament-title">Tournament Standings</h2>
-                    @php 
+            <div class="podium-wrap">
+                    @php
                         $medals = [
-                            ['label' => 'Gold', 'class' => 'gold', 'data' => $standings['gold'] ?? null],
-                            ['label' => 'Silver', 'class' => 'silver', 'data' => $standings['silver'] ?? null],
-                            ['label' => 'Bronze', 'class' => 'bronze', 'data' => $standings['bronze'] ?? null],
-                            ['label' => 'Bronze', 'class' => 'bronze', 'data' => $standings['bronze1'] ?? null],
+                            ['label' => '1st', 'data' => $standings['gold'] ?? null],
+                            ['label' => '2nd', 'data' => $standings['silver'] ?? null],
+                            ['label' => '3rd', 'data' => $standings['bronze'] ?? null],
+                            ['label' => '3rd', 'data' => $standings['bronze1'] ?? null],
                         ];
                     @endphp
-                    <!-- Tournament Table -->
-                    <div style="width: 50%;">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Rank</th>
-                                <th>Player</th>
-                                <th>Code</th>
-                                <th>Medal</th>
-                            </tr>
-                        </thead>
+                    <table class="podium">
                         <tbody>
-                            @foreach ($medals as $index => $medal)
-                                <tr class="{{ $medal['class'] }}">
-                                    <td>{{ $index + 1 }}</td>
+                            @foreach ($medals as $medal)
+                                <tr>
+                                    <td class="podium-place">{{ $medal['label'] }}</td>
                                     <td>{{ $medal['data']->user_name ?? '' }}</td>
-                                    <td>{{ $medal['data']->code ?? '' }}</td>
-                                    <td>{{ $medal['label'] }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
                     </table>
-                    </div>
                 </div>
     @endif
     </div>
@@ -1141,36 +1176,42 @@
     const { jsPDF } = window.jspdf;
     const sheets = document.querySelectorAll("#contentToPrint .sheet-page");
 
+    const pageW = 841.89;
+    const pageH = 595.28;
+    const margin = 18;
+    const maxW = pageW - margin * 2;
+    const maxH = pageH - margin * 2;
     let pdf = null;
 
     for (let i = 0; i < sheets.length; i++) {
-        const sheet = sheets[i];
-
-        // 1. High-resolution render (bina kisi CSS change ke)
-        const canvas = await html2canvas(sheet, {
-            scale: 2.5, // Crisp text
+        const canvas = await html2canvas(sheets[i], {
+            scale: 2,
             backgroundColor: "#ffffff",
             useCORS: true
         });
 
-        // Canvas size ko PDF points me convert karo
-        const imgWidthPt = canvas.width * 0.5;
-        const imgHeightPt = canvas.height * 0.5;
-        const imgData = canvas.toDataURL("image/jpeg", 0.98);
+        const ratio = maxW / canvas.width;
+        const sliceH = maxH / ratio;
+        let offsetY = 0;
 
-        // 2. Exact content size ka PDF Page banao
-        if (i === 0) {
-            pdf = new jsPDF({
-                orientation: imgWidthPt > imgHeightPt ? "l" : "p",
-                unit: "pt",
-                format: [imgWidthPt, imgHeightPt] // Exact content size
-            });
-        } else {
-            pdf.addPage([imgWidthPt, imgHeightPt], imgWidthPt > imgHeightPt ? "l" : "p");
+        while (offsetY < canvas.height - 0.5) {
+            const pieceH = Math.min(sliceH, canvas.height - offsetY);
+            const piece = document.createElement("canvas");
+            piece.width = canvas.width;
+            piece.height = Math.max(1, Math.ceil(pieceH));
+            const ctx = piece.getContext("2d");
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, piece.width, piece.height);
+            ctx.drawImage(canvas, 0, offsetY, canvas.width, pieceH, 0, 0, canvas.width, pieceH);
+
+            if (!pdf) {
+                pdf = new jsPDF({ orientation: "l", unit: "pt", format: "a4" });
+            } else {
+                pdf.addPage("a4", "l");
+            }
+            pdf.addImage(piece.toDataURL("image/jpeg", 0.95), "JPEG", margin, margin, maxW, pieceH * ratio);
+            offsetY += pieceH;
         }
-
-        // 3. Image zero margin ke sath fit karo
-        pdf.addImage(imgData, "JPEG", 0, 0, imgWidthPt, imgHeightPt);
     }
 
     if (pdf) {
