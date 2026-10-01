@@ -623,6 +623,47 @@
         .round2_single:before {
             top: var(--join-mid, 50%);
         }
+
+        .sheet-xl .match,
+        .sheet-xl .match2,
+        .sheet-lg .match,
+        .sheet-lg .match2,
+        .sheet-md .match,
+        .sheet-md .match2,
+        .sheet-sm .match,
+        .sheet-sm .match2,
+        .sheet-xs .match,
+        .sheet-xs .match2 {
+            border-radius: 0;
+            box-shadow: none;
+            border: 1px solid #cfcfcf;
+        }
+
+        .sheet-xl .match, .sheet-xl .match2 { min-width: 440px; }
+        .sheet-xl .team { height: auto; min-height: 56px; max-width: none; font-size: 18px; padding: 8px 12px; }
+        .sheet-xl .dist { font-size: 14px; }
+        .sheet-xl strong { font-size: 20px; }
+
+        .sheet-lg .match, .sheet-lg .match2 { min-width: 340px; }
+        .sheet-lg .team { height: auto; min-height: 46px; max-width: none; font-size: 16px; padding: 6px 10px; }
+        .sheet-lg .dist { font-size: 13px; }
+        .sheet-lg strong { font-size: 17px; }
+
+        .sheet-md .match, .sheet-md .match2 { min-width: 260px; }
+        .sheet-md .team { height: auto; min-height: 38px; max-width: none; font-size: 14px; padding: 4px 8px; }
+        .sheet-md .dist { font-size: 12px; }
+        .sheet-md strong { font-size: 15px; }
+
+        .sheet-sm .match, .sheet-sm .match2 { min-width: 200px; }
+        .sheet-sm .team { height: 32px; max-width: none; font-size: 12px; padding: 2px 6px; }
+        .sheet-sm .dist { font-size: 10px; }
+        .sheet-sm strong { font-size: 12px; }
+
+        .sheet-xs .match, .sheet-xs .match2 { min-width: 158px; }
+        .sheet-xs .team { height: 24px; max-width: none; font-size: 11px; padding: 0 4px; }
+        .sheet-xs .dist { font-size: 9px; margin-top: -4px; }
+        .sheet-xs strong { font-size: 11px; }
+        .sheet-xs .bracket { gap: 56px; }
                     
                     
     </style>
@@ -647,7 +688,25 @@
             <div class="bracket-container">
                
                 @foreach($allSheets as $sheetNo => $matches)
-                <div class="sheet-page">
+                @php
+                    $sheetMatchCount = count($matches['round2Matches'] ?? [])
+                        + count($matches['round1Matches'] ?? [])
+                        + count($matches['quarterfinalMatches'] ?? [])
+                        + count($matches['semifinalMatches'] ?? [])
+                        + count($matches['finalMatches'] ?? []);
+                    if ($sheetMatchCount <= 1) {
+                        $sheetSize = 'sheet-xl';
+                    } elseif ($sheetMatchCount <= 3) {
+                        $sheetSize = 'sheet-lg';
+                    } elseif ($sheetMatchCount <= 6) {
+                        $sheetSize = 'sheet-md';
+                    } elseif ($sheetMatchCount <= 12) {
+                        $sheetSize = 'sheet-sm';
+                    } else {
+                        $sheetSize = 'sheet-xs';
+                    }
+                @endphp
+                <div class="sheet-page {{ $sheetSize }}">
                 @if($sheetNo == 1)
                 <h1 class="tournament-title"><img src="{{url($setting->header_logo)}}" height="50px"> {{$turnament->title}}</h1>
                 <h2 class="tournament-title">🏆 {{$turnament['get_category']->title}} {{ $turnament->gender == 1 ? 'Male' : 'Female' }} {{$turnament['get_waight_cat']->title}}</h2>
