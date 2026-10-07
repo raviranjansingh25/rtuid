@@ -38,6 +38,133 @@ function splitIntoEqualParts($array, $parts = 2) {
     return $chunks;
 }
 
+/**
+ * Spread players across $matchCount matches (2 slots each).
+ * Fills one slot per match first, then second slots — so 2 blanks
+ * become one blank in each match, never both blanks in the same match.
+ */
+function distributeMatchSlots(array $players, int $matchCount): array
+{
+    $matches = [];
+    for ($i = 0; $i < max(0, $matchCount); $i++) {
+        $matches[$i] = [];
+    }
+    if ($matchCount <= 0) {
+        return $matches;
+    }
+
+    $entries = [];
+    foreach ($players as $userId => $userName) {
+        $entries[] = [$userId, $userName];
+    }
+
+    $i = 0;
+    $total = count($entries);
+
+    for ($m = 0; $m < $matchCount && $i < $total; $m++) {
+        [$uid, $uname] = $entries[$i++];
+        $matches[$m][$uid] = $uname;
+    }
+
+    for ($m = 0; $m < $matchCount && $i < $total; $m++) {
+        if (count($matches[$m]) < 2) {
+            [$uid, $uname] = $entries[$i++];
+            $matches[$m][$uid] = $uname;
+        }
+    }
+
+    return $matches;
+}
+
+/**
+ * Fix existing rounds where one match has 2 blanks and another has 2 players.
+ * Spreads real participants one-per-match when possible.
+ */
+function rebalanceDrawSheetBlanks($tournamentId): void
+{
+    $sheets = \App\Models\DrawSheet::where('tournament_id', $tournamentId)
+        ->whereNotIn('match', [6, 7])
+        ->orderBy('sheet')
+        ->orderBy('match')
+        ->orderBy('match_group')
+        ->orderBy('group_set')
+        ->get()
+        ->groupBy(function ($row) {
+            return $row->sheet . '-' . $row->match;
+        });
+
+    foreach ($sheets as $rows) {
+        $byGroup = $rows->groupBy('match_group');
+        $matchCount = $byGroup->count();
+        if ($matchCount < 2) {
+            continue;
+        }
+
+        $filledCounts = [];
+        $players = [];
+        foreach ($byGroup as $groupRows) {
+            $filled = 0;
+            foreach ($groupRows as $row) {
+                if (!empty($row->user_id)) {
+                    $filled++;
+                    $players[] = [
+                        'user_id'   => $row->user_id,
+                        'user_name' => $row->user_name,
+                        'status'    => $row->status,
+                    ];
+                }
+            }
+            $filledCounts[] = $filled;
+        }
+
+        // Only when at least one match is fully empty and another is fully filled
+        if (min($filledCounts) > 0 || max($filledCounts) < 2) {
+            continue;
+        }
+        if (count($players) < $matchCount) {
+            continue;
+        }
+
+        // Plan: 1 participant per match first, then fill remaining slots
+        $slotPlan = [];
+        for ($m = 0; $m < $matchCount; $m++) {
+            $slotPlan[$m] = [null, null];
+        }
+        $pi = 0;
+        $totalPlayers = count($players);
+
+        for ($m = 0; $m < $matchCount && $pi < $totalPlayers; $m++) {
+            $slotPlan[$m][0] = $players[$pi++];
+        }
+        for ($m = 0; $m < $matchCount && $pi < $totalPlayers; $m++) {
+            $slotPlan[$m][1] = $players[$pi++];
+        }
+
+        $groupKeys = $byGroup->keys()->values();
+        foreach ($groupKeys as $matchIndex => $groupKey) {
+            $groupRows = $byGroup[$groupKey]->values();
+            foreach ($groupRows as $slotIndex => $row) {
+                if ($slotIndex > 1) {
+                    break;
+                }
+                $payload = $slotPlan[$matchIndex][$slotIndex] ?? null;
+                if ($payload) {
+                    $row->user_id = $payload['user_id'];
+                    $row->user_name = $payload['user_name'];
+                    $row->status = $payload['status'];
+                } else {
+                    $row->user_id = null;
+                    $row->user_name = null;
+                    if ($row->status === null || $row->status === '' || $row->status === 'pending' || (int) $row->status === 1) {
+                        $row->status = 'pending';
+                    }
+                }
+                $row->save();
+            }
+        }
+    }
+}
+
 function groupMatches($drawSheets, $matchType)
 {
     if (!isset($drawSheets[$matchType])) {

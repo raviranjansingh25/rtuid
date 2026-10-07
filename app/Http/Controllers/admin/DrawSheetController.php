@@ -118,6 +118,9 @@ class DrawSheetController extends Controller
                 ];
                 // p($Standings);
         if ($data->count() > 0) {
+            // Fix rounds where both blanks landed in one match
+            rebalanceDrawSheetBlanks($decrypted_id);
+
             // 🔹 Pehle sheet ke hisaab se group karo
             $sheets = DrawSheet::where('tournament_id', $decrypted_id)
                 ->orderBy('match')
@@ -206,15 +209,12 @@ class DrawSheetController extends Controller
 
             } elseif ($count <= 4 && $count > 2) {
 
-            
-                $semifinalMatches = array_chunk($sheetPlayers, 2, true);
-            
+                // 3–4 players: 2 semi matches; if 1 blank, put it alone (not both blanks in one match)
+                $semifinalMatches = distributeMatchSlots($sheetPlayers, 2);
                 $groupCounter = 1;
-            
+
                 foreach ($semifinalMatches as $matchIndex => $matchPlayers) {
-            
                     foreach ($matchPlayers as $userId => $userName) {
-            
                         DrawSheet::create([
                             'tournament_id' => $decrypted_id,
                             'user_id'       => $userId,
@@ -226,13 +226,10 @@ class DrawSheetController extends Controller
                             'round_no'      => 2,
                             'status'        => 'pending'
                         ]);
-            
                         $groupCounter++;
                     }
-            
-                    // agar odd player ho to blank opponent add karo
-                    if (count($matchPlayers) == 1) {
-            
+
+                    for ($s = count($matchPlayers); $s < 2; $s++) {
                         DrawSheet::create([
                             'tournament_id' => $decrypted_id,
                             'user_id'       => null,
@@ -244,14 +241,12 @@ class DrawSheetController extends Controller
                             'round_no'      => 2,
                             'status'        => 'pending'
                         ]);
-            
                         $groupCounter++;
                     }
                 }
-            
+
                 // Final placeholder
                 for ($i = 1; $i <= 2; $i++) {
-            
                     DrawSheet::create([
                         'tournament_id' => $decrypted_id,
                         'user_id'       => null,
@@ -265,13 +260,48 @@ class DrawSheetController extends Controller
                     ]);
                 }
             } elseif ($count <= 8) {
-                $semifinalSlots = 4;
-                $quarterPlayers = max(0, $count - $semifinalSlots);
-                $quarter = array_slice($sheetPlayers, 0, $quarterPlayers, true);
-                $semifinalPlayers = array_slice($sheetPlayers, $quarterPlayers, null, true);
-                
-                // Semifinal insert
-                $semifinalMatches = array_chunk($semifinalPlayers, 2, true);
+                // 5–8: full QF matches first; bye seeds go to semis (1 blank per semi when 2 blanks)
+                $semiMatchCount = 2;
+                $playersInQuarter = 2 * max(0, $count - 4);
+                $quarter = array_slice($sheetPlayers, 0, $playersInQuarter, true);
+                $semiSeeds = array_slice($sheetPlayers, $playersInQuarter, null, true);
+
+                if ($playersInQuarter > 0) {
+                    $quarterMatches = array_chunk($quarter, 2, true);
+                    $groupCounter = 1;
+                    foreach ($quarterMatches as $matchIndex => $matchPlayers) {
+                        foreach ($matchPlayers as $userId => $userName) {
+                            DrawSheet::create([
+                                'tournament_id' => $decrypted_id,
+                                'user_id'       => $userId,
+                                'user_name'     => $userName,
+                                'sheet'         => $sheetNumber,
+                                'match'         => 3, // quarterfinal
+                                'match_group'   => $matchIndex + 1,
+                                'group_set'     => $groupCounter,
+                                'round_no'      => 4,
+                                'status'        => 'pending'
+                            ]);
+                            $groupCounter++;
+                        }
+                        for ($s = count($matchPlayers); $s < 2; $s++) {
+                            DrawSheet::create([
+                                'tournament_id' => $decrypted_id,
+                                'user_id'       => null,
+                                'user_name'     => null,
+                                'sheet'         => $sheetNumber,
+                                'match'         => 3,
+                                'match_group'   => $matchIndex + 1,
+                                'group_set'     => $groupCounter,
+                                'round_no'      => 4,
+                                'status'        => 'pending'
+                            ]);
+                            $groupCounter++;
+                        }
+                    }
+                }
+
+                $semifinalMatches = distributeMatchSlots($semiSeeds, $semiMatchCount);
                 $groupCounter1 = 1;
                 foreach ($semifinalMatches as $matchIndex => $matchPlayers) {
                     foreach ($matchPlayers as $userId => $userName) {
@@ -281,47 +311,29 @@ class DrawSheetController extends Controller
                             'user_name'     => $userName,
                             'sheet'         => $sheetNumber,
                             'match'         => 2, // semifinal
-                            'match_group'   =>  $matchIndex + 1,
+                            'match_group'   => $matchIndex + 1,
                             'group_set'     => $groupCounter1,
                             'round_no'      => 3,
                             'status'        => 'pending'
                         ]);
-
+                        $groupCounter1++;
+                    }
+                    for ($s = count($matchPlayers); $s < 2; $s++) {
+                        DrawSheet::create([
+                            'tournament_id' => $decrypted_id,
+                            'user_id'       => null,
+                            'user_name'     => null,
+                            'sheet'         => $sheetNumber,
+                            'match'         => 2,
+                            'match_group'   => $matchIndex + 1,
+                            'group_set'     => $groupCounter1,
+                            'round_no'      => 3,
+                            'status'        => 'pending'
+                        ]);
                         $groupCounter1++;
                     }
                 }
 
-                $groupCounter = 1;
-                foreach ($quarter as $userId => $userName) {
-                    // Real Player
-                    DrawSheet::create([
-                        'tournament_id' => $decrypted_id,
-                        'user_id'       => $userId,
-                        'user_name'     => $userName,
-                        'sheet'         => $sheetNumber,
-                        'match'         => 3, // round-1
-                        'match_group'   => $groupCounter,
-                        'group_set'     => 1,
-                        'round_no'      => 4,
-                        'status'        => 'pending'
-                    ]);
-                
-                    // Blank Opponent
-                    DrawSheet::create([
-                        'tournament_id' => $decrypted_id,
-                        'user_id'       => null,
-                        'user_name'     => null,
-                        'sheet'         => $sheetNumber,
-                        'match'         => 3, // round-1
-                        'match_group'   => $groupCounter,
-                        'group_set'     => 2,
-                        'round_no'      => 4,
-                        'status'        => 'pending'
-                    ]);
-                
-                    $groupCounter++;
-                }
-    
                 // Final placeholder
                 for ($i = 1; $i <= 2; $i++) {
                     DrawSheet::create([
@@ -338,47 +350,49 @@ class DrawSheetController extends Controller
                 }
 
             } elseif ($count <= 16) {
-                
-                // 🔹 Round-1 + Quarterfinal
-                $quarterfinalSlots = 8;
-                $round1Players = max(0, $count - $quarterfinalSlots);
-                $round1 = array_slice($sheetPlayers, 0, $round1Players, true);
-                $quarterfinalPlayers = array_slice($sheetPlayers, $round1Players, null, true);
 
-                // Round-1 insert
-                $groupCounter = 1;
-                foreach ($round1 as $userId => $userName) {
-                    // Real Player
-                    DrawSheet::create([
-                        'tournament_id' => $decrypted_id,
-                        'user_id'       => $userId,
-                        'user_name'     => $userName,
-                        'sheet'         => $sheetNumber,
-                        'match'         => 4, // round-1
-                        'match_group'   => $groupCounter,
-                        'group_set'     => 1,
-                        'round_no'      => 4,
-                        'status'        => 'pending'
-                    ]);
-                
-                    // Blank Opponent
-                    DrawSheet::create([
-                        'tournament_id' => $decrypted_id,
-                        'user_id'       => null,
-                        'user_name'     => null,
-                        'sheet'         => $sheetNumber,
-                        'match'         => 4, // round-1
-                        'match_group'   => $groupCounter,
-                        'group_set'     => 2,
-                        'round_no'      => 4,
-                        'status'        => 'pending'
-                    ]);
-                
-                    $groupCounter++;
+                // 9–16: full Round-1 matches; bye seeds spread across 4 quarter matches
+                $qfMatchCount = 4;
+                $playersInRound1 = 2 * max(0, $count - 8);
+                $round1 = array_slice($sheetPlayers, 0, $playersInRound1, true);
+                $quarterSeeds = array_slice($sheetPlayers, $playersInRound1, null, true);
+
+                if ($playersInRound1 > 0) {
+                    $round1Matches = array_chunk($round1, 2, true);
+                    $groupCounter = 1;
+                    foreach ($round1Matches as $matchIndex => $matchPlayers) {
+                        foreach ($matchPlayers as $userId => $userName) {
+                            DrawSheet::create([
+                                'tournament_id' => $decrypted_id,
+                                'user_id'       => $userId,
+                                'user_name'     => $userName,
+                                'sheet'         => $sheetNumber,
+                                'match'         => 4, // round-1
+                                'match_group'   => $matchIndex + 1,
+                                'group_set'     => $groupCounter,
+                                'round_no'      => 4,
+                                'status'        => 'pending'
+                            ]);
+                            $groupCounter++;
+                        }
+                        for ($s = count($matchPlayers); $s < 2; $s++) {
+                            DrawSheet::create([
+                                'tournament_id' => $decrypted_id,
+                                'user_id'       => null,
+                                'user_name'     => null,
+                                'sheet'         => $sheetNumber,
+                                'match'         => 4,
+                                'match_group'   => $matchIndex + 1,
+                                'group_set'     => $groupCounter,
+                                'round_no'      => 4,
+                                'status'        => 'pending'
+                            ]);
+                            $groupCounter++;
+                        }
+                    }
                 }
 
-                // Quarterfinal insert
-                $quarterfinalMatches = array_chunk($quarterfinalPlayers, 2, true);
+                $quarterfinalMatches = distributeMatchSlots($quarterSeeds, $qfMatchCount);
                 $groupCounter1 = 1;
                 foreach ($quarterfinalMatches as $matchIndex => $matchPlayers) {
                     foreach ($matchPlayers as $userId => $userName) {
@@ -388,12 +402,25 @@ class DrawSheetController extends Controller
                             'user_name'     => $userName,
                             'sheet'         => $sheetNumber,
                             'match'         => 3, // quarterfinal
-                            'match_group'   =>  $matchIndex + 1,
+                            'match_group'   => $matchIndex + 1,
                             'group_set'     => $groupCounter1,
                             'round_no'      => 3,
                             'status'        => 'pending'
                         ]);
-
+                        $groupCounter1++;
+                    }
+                    for ($s = count($matchPlayers); $s < 2; $s++) {
+                        DrawSheet::create([
+                            'tournament_id' => $decrypted_id,
+                            'user_id'       => null,
+                            'user_name'     => null,
+                            'sheet'         => $sheetNumber,
+                            'match'         => 3,
+                            'match_group'   => $matchIndex + 1,
+                            'group_set'     => $groupCounter1,
+                            'round_no'      => 3,
+                            'status'        => 'pending'
+                        ]);
                         $groupCounter1++;
                     }
                 }
@@ -411,7 +438,7 @@ class DrawSheetController extends Controller
                         'status'        => 'pending'
                     ]);
                 }
-    
+
                 // Final placeholder
                 for ($i = 1; $i <= 2; $i++) {
                     DrawSheet::create([
@@ -428,73 +455,87 @@ class DrawSheetController extends Controller
                 }
 
             } else {
-                // 🔹 17–32 → Round-2 + Round-1 + Quarterfinal
-                $quarterfinalSlots = 16;
-                $round1Players = max(0, $count - $quarterfinalSlots);
-                $round1 = array_slice($sheetPlayers, 0, $round1Players, true);
-                $quarterfinalPlayers = array_slice($sheetPlayers, $round1Players, null, true);
+                // 17–32: full Round-2 matches; bye seeds spread across 8 Round-1 matches
+                $r1MatchCount = 8;
+                $playersInRound2 = 2 * max(0, $count - 16);
+                $round2 = array_slice($sheetPlayers, 0, $playersInRound2, true);
+                $round1Seeds = array_slice($sheetPlayers, $playersInRound2, null, true);
 
-                // Round-1 insert
-                $groupCounter = 1;
-                foreach ($round1 as $userId => $userName) {
-                    // Real Player
-                    DrawSheet::create([
-                        'tournament_id' => $decrypted_id,
-                        'user_id'       => $userId,
-                        'user_name'     => $userName,
-                        'sheet'         => $sheetNumber,
-                        'match'         => 5, // round-1
-                        'match_group'   => $groupCounter,
-                        'group_set'     => 1,
-                        'round_no'      => 4,
-                        'status'        => 'pending'
-                    ]);
-                
-                    // Blank Opponent
-                    DrawSheet::create([
-                        'tournament_id' => $decrypted_id,
-                        'user_id'       => null,
-                        'user_name'     => null,
-                        'sheet'         => $sheetNumber,
-                        'match'         => 5, // round-1
-                        'match_group'   => $groupCounter,
-                        'group_set'     => 2,
-                        'round_no'      => 4,
-                        'status'        => 'pending'
-                    ]);
-                
-                    $groupCounter++;
+                if ($playersInRound2 > 0) {
+                    $round2Matches = array_chunk($round2, 2, true);
+                    $groupCounter = 1;
+                    foreach ($round2Matches as $matchIndex => $matchPlayers) {
+                        foreach ($matchPlayers as $userId => $userName) {
+                            DrawSheet::create([
+                                'tournament_id' => $decrypted_id,
+                                'user_id'       => $userId,
+                                'user_name'     => $userName,
+                                'sheet'         => $sheetNumber,
+                                'match'         => 5, // round-2
+                                'match_group'   => $matchIndex + 1,
+                                'group_set'     => $groupCounter,
+                                'round_no'      => 4,
+                                'status'        => 'pending'
+                            ]);
+                            $groupCounter++;
+                        }
+                        for ($s = count($matchPlayers); $s < 2; $s++) {
+                            DrawSheet::create([
+                                'tournament_id' => $decrypted_id,
+                                'user_id'       => null,
+                                'user_name'     => null,
+                                'sheet'         => $sheetNumber,
+                                'match'         => 5,
+                                'match_group'   => $matchIndex + 1,
+                                'group_set'     => $groupCounter,
+                                'round_no'      => 4,
+                                'status'        => 'pending'
+                            ]);
+                            $groupCounter++;
+                        }
+                    }
                 }
 
-                // Quarterfinal insert
-                $quarterfinalMatches = array_chunk($quarterfinalPlayers, 2, true);
+                $round1Matches = distributeMatchSlots($round1Seeds, $r1MatchCount);
                 $groupCounter1 = 1;
-                foreach ($quarterfinalMatches as $matchIndex => $matchPlayers) {
+                foreach ($round1Matches as $matchIndex => $matchPlayers) {
                     foreach ($matchPlayers as $userId => $userName) {
                         DrawSheet::create([
                             'tournament_id' => $decrypted_id,
                             'user_id'       => $userId,
                             'user_name'     => $userName,
                             'sheet'         => $sheetNumber,
-                            'match'         => 4, // quarterfinal
-                            'match_group'   =>  $matchIndex + 1,
+                            'match'         => 4, // round-1
+                            'match_group'   => $matchIndex + 1,
                             'group_set'     => $groupCounter1,
                             'round_no'      => 3,
                             'status'        => 'pending'
                         ]);
-
+                        $groupCounter1++;
+                    }
+                    for ($s = count($matchPlayers); $s < 2; $s++) {
+                        DrawSheet::create([
+                            'tournament_id' => $decrypted_id,
+                            'user_id'       => null,
+                            'user_name'     => null,
+                            'sheet'         => $sheetNumber,
+                            'match'         => 4,
+                            'match_group'   => $matchIndex + 1,
+                            'group_set'     => $groupCounter1,
+                            'round_no'      => 3,
+                            'status'        => 'pending'
+                        ]);
                         $groupCounter1++;
                     }
                 }
 
-                // Quarterfinal insert
                 for ($i = 1; $i <= 8; $i++) {
                     DrawSheet::create([
                         'tournament_id' => $decrypted_id,
                         'user_id'       => null,
                         'user_name'     => null,
                         'sheet'         => $sheetNumber,
-                        'match'         => 3, // semifinal
+                        'match'         => 3, // quarterfinal
                         'match_group'   => ceil($i / 2),
                         'group_set'     => $i,
                         'round_no'      => 2,
@@ -515,7 +556,7 @@ class DrawSheetController extends Controller
                         'status'        => 'pending'
                     ]);
                 }
-    
+
                 // Final placeholder
                 for ($i = 1; $i <= 2; $i++) {
                     DrawSheet::create([

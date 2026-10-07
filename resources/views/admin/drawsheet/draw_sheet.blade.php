@@ -214,16 +214,26 @@
         /* Arrow styling */
         .arrow {
             position: absolute;
-            right: -38px;
-            top: 35%;
+            right: -22px;
+            top: 50%;
             transform: translateY(-50%);
-            padding-left: 15px;
-            width: 37px;
-            /*height: 2px;*/
-            /*background: linear-gradient(90deg, #667eea, #764ba2);*/
-            border-bottom: 2px solid #774ba1; /* normal border ko transparent rakho */
-            
+            padding: 0 4px;
+            width: auto;
+            border-bottom: none;
+            background: #fff;
+            z-index: 3;
+            line-height: 1;
+        }
+        .arrow span {
+            font-size: 12px;
+            color: #774ba1;
+            font-weight: 600;
+        }
+        .js-bracket-line {
+            position: absolute;
+            background: #774ba1;
             z-index: 1;
+            pointer-events: none;
         }
 
         /* .arrow::after {
@@ -504,90 +514,25 @@
             border-right: 5px solid transparent;
         }
 
-        .quarterfinal_team:after {
-            content: '';
-            position: absolute;
-            right: -38px;
-            height: 50%;
-            border-right: solid 2px #774ba1;
-            top: 12%;
-        }
-        
-        .round2_team:after {
-            content: '';
-            position: absolute;
-            right: -38px;
-            height: 50%;
-            border-right: solid 2px #774ba1;
-            top: 24%;
-        }
-
-        .quarterfinal_team_semi:after {
-            content: '';
-            position: absolute;
-            right: -38px;
-            height: var(--join-height, 50%);
-            border-right: solid 2px #774ba1;
-            top: var(--join-top, 22%);
-        }
-
-
-        .quarterfinal_team:before {
-            content: '';
-            position: absolute;
-            border-top: solid 2px #774ba1;
-            right: -140px;
-            width: 104px;
-            top: 34.5%;
-            height: 10px;
-            bottom: 0;
-        }
-        
-        .round2_team:before {
-            content: '';
-            position: absolute;
-            border-top: solid 2px #774ba1;
-            right: -140px;
-            width: 104px;
-            top: 42.5%;
-            height: 10px;
-            bottom: 0;
-        }
-
-        .quarterfinal_team_semi:before {
-            content: '';
-            position: absolute;
-            border-top: solid 2px #774ba1;
-            right: -140px;
-            width: 104px;
-            top: var(--join-mid, 45%);
-            height: 10px;
-            bottom: 0;
-        }
-
-        .semifinal_team:after {
-            content: '';
-            position: absolute;
-            right: -39px;
-            height: var(--join-height, 50%);
-            border-right: solid 2px #774ba1;
-            top: var(--join-top, 22%);
+        /* CSS join lines disabled — JS draws exact center-to-center connectors */
+        .quarterfinal_team:after,
+        .round2_team:after,
+        .quarterfinal_team_semi:after,
+        .semifinal_team:after,
+        .quarterfinal_team:before,
+        .round2_team:before,
+        .quarterfinal_team_semi:before,
+        .semifinal_team:before,
+        .quarterfinal_team_round2:after,
+        .quarterfinal_team_round2:before {
+            content: none !important;
+            display: none !important;
+            border: none !important;
         }
         
         .dist{
             margin-top: -2px;
             font-size: 11px;
-        }
-
-        .semifinal_team:before {
-            content: '';
-            position: absolute;
-            border-top: solid 2px #774ba1;
-            right: -140px;
-            width: 104px;
-            top: var(--join-mid, 45%);
-            height: 10px;
-            bottom: 0;
         }
         
         /* Table Styling */
@@ -637,28 +582,6 @@
 }
         
         
-        .quarterfinal_team_round2:after,
-        .round2_team:after {
-            top: var(--join-top, 22%);
-            height: var(--join-height, 50%);
-        }
-        .quarterfinal_team_round2:before,
-        .round2_team:before {
-            top: var(--join-mid, 45%);
-        }
-        .no-join:after,
-        .quarterfinal_single:after,
-        .semifinal_single:after,
-        .round2_single:after {
-            height: 0;
-            border: none;
-        }
-        .quarterfinal_single:before,
-        .semifinal_single:before,
-        .round2_single:before {
-            top: var(--join-mid, 50%);
-        }
-
         .sheet-xl .match,
         .sheet-xl .match2,
         .sheet-lg .match,
@@ -767,16 +690,21 @@
 
             <!-- Round 2 -->
             @if(!empty($matches['round2Matches']))
-                @php 
-                    $round2Matches = array_chunk($matches['round2Matches'], 2);
+                @php
+                    // Bye structure: same count as next round → 1 arrow each; else pair into next match
+                    $nextRoundCount = count($matches['round1Matches'] ?? []);
+                    $round2Chunk = ($nextRoundCount > 0 && count($matches['round2Matches']) === $nextRoundCount) ? 1 : 2;
+                    $round2Matches = array_chunk($matches['round2Matches'], $round2Chunk);
                 @endphp
 
                 <div class="round round-early">
                     <h3 class="round-title">Round 1</h3>
                    @php $arrowCounter = 1; @endphp
                     @foreach($round2Matches as $group1)
-                    
-                        <div class="round2_team">
+                        @php
+                            $round1_single = count($group1) === 1 ? 'round2_single' : '';
+                        @endphp
+                        <div class="round2_team {{ $round1_single }}">
                             @foreach($group1 as $key=>$match)
                            
                             
@@ -819,8 +747,10 @@
 
             <!-- Round 1 -->
             @if(!empty($matches['round1Matches']))
-                @php 
-                    $round1Matches = array_chunk($matches['round1Matches'], 2);
+                @php
+                    $nextQfCount = count($matches['quarterfinalMatches'] ?? []);
+                    $round1Chunk = ($nextQfCount > 0 && count($matches['round1Matches']) === $nextQfCount) ? 1 : 2;
+                    $round1Matches = array_chunk($matches['round1Matches'], $round1Chunk);
                 @endphp
 
                 <div class="round round-early">
@@ -876,9 +806,12 @@
             <!-- Quarterfinals -->
             @if(!empty($matches['quarterfinalMatches']))
                 <!--<div class="round" style="margin-top: 192px;">-->
-                    @php 
-                        $groupedMatches = array_chunk($matches['quarterfinalMatches'], 2);   
-                        
+                    @php
+                        // Bye structure (e.g. 6 players): 2 QF → 2 SF blanks → one arrow each
+                        // Full bracket (8 players): 4 QF → 2 SF → pair arrows into each SF
+                        $sfCount = count($matches['semifinalMatches'] ?? []);
+                        $qfChunk = ($sfCount > 0 && count($matches['quarterfinalMatches']) === $sfCount) ? 1 : 2;
+                        $groupedMatches = array_chunk($matches['quarterfinalMatches'], $qfChunk);
                     @endphp
                     <div class="round">
                     <h3 class="round-title">Quarterfinals</h3>
@@ -1233,14 +1166,17 @@ function alignDrawSheet() {
         }) : [];
         var finalRound = bracket.querySelector(".finals-round");
         var finalMatch = finalRound ? finalRound.querySelector(".match") : null;
+        var round2Groups = Array.from(bracket.querySelectorAll(".quarterfinal_team_round2"));
+        var round1Groups = Array.from(bracket.querySelectorAll(".round2_team"));
 
+        bracket.style.position = "relative";
         bracket.style.alignItems = "flex-start";
-        if (semiRound) semiRound.style.top = "0px";
-        semiMatches.forEach(function (match) { match.style.top = "0px"; match.style.marginTop = "0px"; });
-        if (finalRound) finalRound.style.top = "0px";
-        bracket.querySelectorAll(".match, .quarterfinal_team, .round2_team, .round").forEach(function (el) {
+        bracket.querySelectorAll(".match, .quarterfinal_team, .round2_team, .round, .semifinal_team").forEach(function (el) {
             el.style.top = "0px";
             el.style.marginTop = "0px";
+        });
+        bracket.querySelectorAll(".js-bracket-line").forEach(function (el) {
+            el.remove();
         });
 
         function centerY(el) {
@@ -1248,100 +1184,160 @@ function alignDrawSheet() {
             return rect.top + rect.height / 2;
         }
 
-        function groupMid(group) {
-            var matches = Array.from(group.children).filter(function (el) {
+        function groupMatches(group) {
+            return Array.from(group.children).filter(function (el) {
                 return el.classList.contains("match");
             });
+        }
+
+        function groupMid(group) {
+            var matches = groupMatches(group);
             if (!matches.length) return centerY(group);
             return matches.reduce(function (sum, match) {
                 return sum + centerY(match);
             }, 0) / matches.length;
         }
 
-        function pushFollowing(match, extra) {
-            if (!match || extra <= 1) return;
-            match.style.marginTop = ((parseFloat(match.style.marginTop) || 0) + extra) + "px";
+        function addMargin(el, delta) {
+            if (!el || Math.abs(delta) < 0.5) return;
+            el.style.marginTop = ((parseFloat(el.style.marginTop) || 0) + delta) + "px";
         }
 
-        function alignColumn(column, sourceGroups, targetMatches) {
-            if (!column || !sourceGroups.length || !targetMatches.length) return;
-            column.style.position = "relative";
-            column.style.top = "0px";
-            sourceGroups.forEach(function (group) {
-                group.style.position = "relative";
-                group.style.top = "0px";
-            });
-            var count = Math.min(sourceGroups.length, targetMatches.length);
-            var gap = 18;
-            var firstShift = centerY(targetMatches[0]) - groupMid(sourceGroups[0]);
-            if (firstShift > 0) column.style.marginTop = firstShift + "px";
+        function alignTargetsToSources(sourceMids, targets) {
+            var count = Math.min(sourceMids.length, targets.length);
+            for (var i = 0; i < count; i++) {
+                addMargin(targets[i], sourceMids[i] - centerY(targets[i]));
+            }
+        }
 
+        function alignColumn(sourceGroups, targetMatches) {
+            if (!sourceGroups.length || !targetMatches.length) return;
+            var gap = 18;
             for (var i = 1; i < sourceGroups.length; i++) {
                 var previous = sourceGroups[i - 1].getBoundingClientRect();
                 var current = sourceGroups[i].getBoundingClientRect();
                 if (current.top < previous.bottom + gap) {
-                    var extra = (previous.bottom + gap) - current.top;
-                    sourceGroups[i].style.marginTop = ((parseFloat(sourceGroups[i].style.marginTop) || 0) + extra) + "px";
+                    addMargin(sourceGroups[i], (previous.bottom + gap) - current.top);
                 }
             }
-
-            for (var n = 0; n < count; n++) {
-                var delta = groupMid(sourceGroups[n]) - centerY(targetMatches[n]);
-                if (delta > 1) pushFollowing(targetMatches[n], delta);
+            var mids = sourceGroups.map(groupMid);
+            if (targetMatches[0]) {
+                var targetColumn = targetMatches[0].closest(".round");
+                if (targetColumn) addMargin(targetColumn, mids[0] - centerY(targetMatches[0]));
             }
-            sourceGroups.forEach(setJoin);
+            alignTargetsToSources(mids, targetMatches);
         }
-
-        function setJoin(group) {
-            var matches = Array.from(group.children).filter(function (el) {
-                return el.classList.contains("match");
-            });
-            if (!matches.length) return;
-            var top = group.getBoundingClientRect().top;
-            var ys = matches.map(function (match) {
-                return centerY(match) - top;
-            });
-            var mid = ys.reduce(function (sum, y) { return sum + y; }, 0) / ys.length;
-            group.style.setProperty("--join-mid", mid + "px");
-            if (matches.length < 2) {
-                group.classList.add("no-join");
-                group.style.setProperty("--join-top", mid + "px");
-                group.style.setProperty("--join-height", "0px");
-                return;
-            }
-            group.classList.remove("no-join");
-            group.style.setProperty("--join-top", ys[0] + "px");
-            group.style.setProperty("--join-height", (ys[ys.length - 1] - ys[0]) + "px");
-        }
-
-        groups.forEach(setJoin);
 
         var qfMatches = Array.from(bracket.querySelectorAll(".quarterfinal_team_semi > .match"));
-        var round2Groups = Array.from(bracket.querySelectorAll(".quarterfinal_team_round2"));
-        var round2Column = round2Groups.length ? round2Groups[0].parentElement : null;
-        alignColumn(round2Column, round2Groups, qfMatches);
-
-        var round1Groups = Array.from(bracket.querySelectorAll(".round2_team"));
-        var round1Column = round1Groups.length ? round1Groups[0].parentElement : null;
         var round2Matches = Array.from(bracket.querySelectorAll(".quarterfinal_team_round2 > .match"));
-        alignColumn(round1Column, round1Groups, round2Matches);
-        groups.forEach(setJoin);
+        alignColumn(round2Groups, qfMatches);
+        alignColumn(round1Groups, round2Matches);
 
         if (semiRound && semiMatches.length && groups.length) {
-            var count = Math.min(semiMatches.length, groups.length);
-            semiRound.style.marginTop = Math.max(0, groupMid(groups[0]) - centerY(semiMatches[0])) + "px";
-            for (var i = 1; i < count; i++) {
-                var semiDelta = groupMid(groups[i]) - centerY(semiMatches[i]);
-                if (semiDelta > 1) semiMatches[i].style.marginTop = semiDelta + "px";
-            }
-            setJoin(semiTeam);
+            var qfMids = groups.map(groupMid);
+            addMargin(semiRound, qfMids[0] - centerY(semiMatches[0]));
+            alignTargetsToSources(qfMids, semiMatches);
         }
 
         if (finalRound && finalMatch && semiMatches.length) {
             var semiMid = semiMatches.reduce(function (sum, match) {
                 return sum + centerY(match);
             }, 0) / semiMatches.length;
-            finalRound.style.marginTop = Math.max(0, semiMid - centerY(finalMatch)) + "px";
+            addMargin(finalRound, semiMid - centerY(finalMatch));
+        }
+
+        // Second pass after layout settles
+        if (semiRound && semiMatches.length && groups.length) {
+            alignTargetsToSources(groups.map(groupMid), semiMatches);
+        }
+        if (finalRound && finalMatch && semiMatches.length) {
+            var semiMid2 = semiMatches.reduce(function (sum, match) {
+                return sum + centerY(match);
+            }, 0) / semiMatches.length;
+            addMargin(finalRound, semiMid2 - centerY(finalMatch));
+        }
+
+        // Draw exact connectors from match center → next match center
+        var root = bracket.getBoundingClientRect();
+
+        function pointRight(match) {
+            var r = match.getBoundingClientRect();
+            return {
+                x: r.right - root.left,
+                y: r.top + r.height / 2 - root.top
+            };
+        }
+
+        function pointLeft(match) {
+            var r = match.getBoundingClientRect();
+            return {
+                x: r.left - root.left,
+                y: r.top + r.height / 2 - root.top
+            };
+        }
+
+        function addLine(x1, y1, x2, y2) {
+            var el = document.createElement("div");
+            el.className = "js-bracket-line";
+            if (Math.abs(y1 - y2) < 0.5) {
+                el.style.left = Math.min(x1, x2) + "px";
+                el.style.top = (y1 - 1) + "px";
+                el.style.width = Math.max(1, Math.abs(x2 - x1)) + "px";
+                el.style.height = "2px";
+            } else {
+                el.style.left = (x1 - 1) + "px";
+                el.style.top = Math.min(y1, y2) + "px";
+                el.style.width = "2px";
+                el.style.height = Math.max(1, Math.abs(y2 - y1)) + "px";
+            }
+            bracket.appendChild(el);
+        }
+
+        function connectPair(sources, target) {
+            if (!target || !sources.length) return;
+            var t = pointLeft(target);
+            if (sources.length === 1) {
+                var s = pointRight(sources[0]);
+                var midX = (s.x + t.x) / 2;
+                addLine(s.x, s.y, midX, s.y);
+                if (Math.abs(s.y - t.y) > 0.5) addLine(midX, s.y, midX, t.y);
+                addLine(midX, t.y, t.x, t.y);
+                return;
+            }
+            var pts = sources.map(pointRight);
+            var joinX = Math.min.apply(null, pts.map(function (p) { return p.x; })) + 28;
+            var midY = t.y;
+            pts.forEach(function (p) {
+                addLine(p.x, p.y, joinX, p.y);
+            });
+            var minY = Math.min.apply(null, pts.map(function (p) { return p.y; }));
+            var maxY = Math.max.apply(null, pts.map(function (p) { return p.y; }));
+            addLine(joinX, minY, joinX, maxY);
+            addLine(joinX, midY, t.x, midY);
+        }
+
+        // Early rounds → next matches
+        if (round1Groups.length && round2Matches.length) {
+            round1Groups.forEach(function (group, i) {
+                connectPair(groupMatches(group), round2Matches[i] || null);
+            });
+        }
+        if (round2Groups.length && qfMatches.length) {
+            round2Groups.forEach(function (group, i) {
+                connectPair(groupMatches(group), qfMatches[i] || null);
+            });
+        }
+
+        // QF → SF (1→1 when bye blanks, or paired into SF)
+        if (groups.length && semiMatches.length) {
+            groups.forEach(function (group, i) {
+                connectPair(groupMatches(group), semiMatches[i] || null);
+            });
+        }
+
+        // SF → Final
+        if (semiMatches.length && finalMatch) {
+            connectPair(semiMatches, finalMatch);
         }
     });
 }
