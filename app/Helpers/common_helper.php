@@ -77,8 +77,108 @@ function distributeMatchSlots(array $players, int $matchCount): array
 }
 
 /**
- * Fix existing rounds where one match has 2 blanks and another has 2 players.
- * Spreads real participants one-per-match when possible.
+ * Place bye-seeds into a round like image-2:
+ * seed+blank, blank+blank (W vs W), seed+blank, seed+blank...
+ * Never put two seeds in one match while another match is fully empty.
+ */
+function placeSeededRound(array $seeds, int $matchCount): array
+{
+    if ($matchCount <= 0) {
+        return [];
+    }
+
+    // More seeds than matches → fill evenly (one each, then seconds)
+    if (count($seeds) >= $matchCount) {
+        return distributeMatchSlots($seeds, $matchCount);
+    }
+
+    $matches = [];
+    for ($i = 0; $i < $matchCount; $i++) {
+        $matches[$i] = [];
+    }
+
+    $seedEntries = [];
+    foreach ($seeds as $userId => $userName) {
+        $seedEntries[] = [$userId, $userName];
+    }
+    $seedCount = count($seedEntries);
+    $wwCount = $matchCount - $seedCount;
+
+    // Build order: seed, [ww], seed, seed... (WW after first seed)
+    $types = array_fill(0, $seedCount, 'seed');
+    for ($w = 0; $w < $wwCount; $w++) {
+        $insertAt = min(count($types), 1 + $w * 2);
+        array_splice($types, $insertAt, 0, ['ww']);
+    }
+    while (count($types) < $matchCount) {
+        $types[] = 'ww';
+    }
+    $types = array_slice($types, 0, $matchCount);
+
+    $si = 0;
+    foreach ($types as $m => $type) {
+        if ($type === 'seed' && $si < $seedCount) {
+            [$uid, $uname] = $seedEntries[$si++];
+            $matches[$m][$uid] = $uname;
+        }
+    }
+
+    return $matches;
+}
+
+/**
+ * Group earlier-round matches so each next-round match gets 1 feeder per blank slot.
+ * seed+blank → 1 feeder; blank+blank → 2 feeders.
+ * Skips fully-filled targets (0 blanks) so arrows attach only where Upcoming exists.
+ * Returns [ ['target_index' => int, 'matches' => [...]], ... ]
+ */
+function groupFeedersByBlanks(array $feederMatches, array $targetMatches): array
+{
+    if (empty($feederMatches)) {
+        return [];
+    }
+
+    $groups = [];
+    $fi = 0;
+    $feederCount = count($feederMatches);
+
+    foreach ($targetMatches as $targetIndex => $target) {
+        $blanks = 0;
+        if (empty($target[0]['user_id'])) {
+            $blanks++;
+        }
+        if (empty($target[1]['user_id'])) {
+            $blanks++;
+        }
+        if ($blanks < 1) {
+            continue;
+        }
+
+        $group = [];
+        for ($n = 0; $n < $blanks && $fi < $feederCount; $n++) {
+            $group[] = $feederMatches[$fi++];
+        }
+        if (!empty($group)) {
+            $groups[] = [
+                'target_index' => (int) $targetIndex,
+                'matches'      => $group,
+            ];
+        }
+    }
+
+    // Leftover feeders (safety) — attach to remaining blank targets if any
+    while ($fi < $feederCount) {
+        $groups[] = [
+            'target_index' => null,
+            'matches'      => [$feederMatches[$fi++]],
+        ];
+    }
+
+    return $groups;
+}
+
+/**
+ * Fix existing rounds where one match has 2 players and another is fully empty.
  */
 function rebalanceDrawSheetBlanks($tournamentId): void
 {
@@ -117,32 +217,36 @@ function rebalanceDrawSheetBlanks($tournamentId): void
             $filledCounts[] = $filled;
         }
 
-        // Only when at least one match is fully empty and another is fully filled
+        // One match fully filled + another fully empty → redistribute seeds
         if (min($filledCounts) > 0 || max($filledCounts) < 2) {
             continue;
         }
-        if (count($players) < $matchCount) {
+        if (count($players) < 1) {
             continue;
         }
 
-        // Plan: 1 participant per match first, then fill remaining slots
-        $slotPlan = [];
-        for ($m = 0; $m < $matchCount; $m++) {
-            $slotPlan[$m] = [null, null];
+        $seedMap = [];
+        foreach ($players as $idx => $player) {
+            $seedMap[$idx] = $player['user_name'];
         }
-        $pi = 0;
-        $totalPlayers = count($players);
+        $distributed = placeSeededRound($seedMap, $matchCount);
 
-        for ($m = 0; $m < $matchCount && $pi < $totalPlayers; $m++) {
-            $slotPlan[$m][0] = $players[$pi++];
-        }
-        for ($m = 0; $m < $matchCount && $pi < $totalPlayers; $m++) {
-            $slotPlan[$m][1] = $players[$pi++];
+        $slotPlan = [];
+        foreach ($distributed as $matchIndex => $matchPlayers) {
+            $slotPlan[$matchIndex] = [null, null];
+            $slot = 0;
+            foreach ($matchPlayers as $key => $name) {
+                $slotPlan[$matchIndex][$slot++] = $players[$key];
+            }
         }
 
         $groupKeys = $byGroup->keys()->values();
         foreach ($groupKeys as $matchIndex => $groupKey) {
             $groupRows = $byGroup[$groupKey]->values();
+            // Ensure 2 slots exist in plan
+            if (!isset($slotPlan[$matchIndex])) {
+                $slotPlan[$matchIndex] = [null, null];
+            }
             foreach ($groupRows as $slotIndex => $row) {
                 if ($slotIndex > 1) {
                     break;

@@ -691,10 +691,18 @@
             <!-- Round 2 -->
             @if(!empty($matches['round2Matches']))
                 @php
-                    // Bye structure: same count as next round → 1 arrow each; else pair into next match
-                    $nextRoundCount = count($matches['round1Matches'] ?? []);
-                    $round2Chunk = ($nextRoundCount > 0 && count($matches['round2Matches']) === $nextRoundCount) ? 1 : 2;
-                    $round2Matches = array_chunk($matches['round2Matches'], $round2Chunk);
+                    // Attach only to next-round matches that have Upcoming blanks
+                    $round2Matches = groupFeedersByBlanks(
+                        $matches['round2Matches'],
+                        $matches['round1Matches'] ?? []
+                    );
+                    if (empty($round2Matches)) {
+                        $tmp = [];
+                        foreach (array_chunk($matches['round2Matches'], 2) as $i => $g) {
+                            $tmp[] = ['target_index' => $i, 'matches' => $g];
+                        }
+                        $round2Matches = $tmp;
+                    }
                 @endphp
 
                 <div class="round round-early">
@@ -702,10 +710,12 @@
                    @php $arrowCounter = 1; @endphp
                     @foreach($round2Matches as $group1)
                         @php
-                            $round1_single = count($group1) === 1 ? 'round2_single' : '';
+                            $feederMatches = $group1['matches'] ?? $group1;
+                            $feedTarget = $group1['target_index'] ?? '';
+                            $round1_single = count($feederMatches) === 1 ? 'round2_single' : '';
                         @endphp
-                        <div class="round2_team {{ $round1_single }}">
-                            @foreach($group1 as $key=>$match)
+                        <div class="round2_team {{ $round1_single }}" data-feed-target="{{ $feedTarget }}">
+                            @foreach($feederMatches as $key=>$match)
                            
                             
                                 <div class="match match2" data-match="5" data-sheet={{$sheetNo}}>
@@ -748,26 +758,32 @@
             <!-- Round 1 -->
             @if(!empty($matches['round1Matches']))
                 @php
-                    $nextQfCount = count($matches['quarterfinalMatches'] ?? []);
-                    $round1Chunk = ($nextQfCount > 0 && count($matches['round1Matches']) === $nextQfCount) ? 1 : 2;
-                    $round1Matches = array_chunk($matches['round1Matches'], $round1Chunk);
+                    // Round 2 → only QF matches that have Upcoming (skip fully filled QF)
+                    $round1Matches = groupFeedersByBlanks(
+                        $matches['round1Matches'],
+                        $matches['quarterfinalMatches'] ?? []
+                    );
+                    if (empty($round1Matches)) {
+                        $tmp = [];
+                        foreach (array_chunk($matches['round1Matches'], 2) as $i => $g) {
+                            $tmp[] = ['target_index' => $i, 'matches' => $g];
+                        }
+                        $round1Matches = $tmp;
+                    }
                 @endphp
 
                 <div class="round round-early">
                         
                     <h3 class="round-title">Round 2</h3>
                     @foreach($round1Matches as $group)
-                    @php 
-                    if(count($group) === 1){
-                    $round2_single = 'round2_single';
-                    }else{
-                    $round2_single = '';
-                    }
-                        
-                        @endphp
+                    @php
+                        $feederMatches = $group['matches'] ?? $group;
+                        $feedTarget = $group['target_index'] ?? '';
+                        $round2_single = count($feederMatches) === 1 ? 'round2_single' : '';
+                    @endphp
                    
-                        <div class="quarterfinal_team quarterfinal_team_round2 {{$round2_single}}">
-                            @foreach($group as $match)
+                        <div class="quarterfinal_team quarterfinal_team_round2 {{$round2_single}}" data-feed-target="{{ $feedTarget }}">
+                            @foreach($feederMatches as $match)
                                 <div class="match" data-match="4" data-sheet={{$sheetNo}}>
                                     <div class="team {{ empty($match[0]['user_id']) ? 'empty' : '' }} {{$match[0]['status_class']}} success_class" 
                                         data-team="{{ $match[0]['user_id'] ?? '' }}" 
@@ -1210,6 +1226,21 @@ function alignDrawSheet() {
             }
         }
 
+        function feedTargetIndex(group, fallback) {
+            var raw = group.getAttribute("data-feed-target");
+            if (raw !== null && raw !== "" && !isNaN(parseInt(raw, 10))) {
+                return parseInt(raw, 10);
+            }
+            return fallback;
+        }
+
+        function resolveFeedTargets(sourceGroups, targetMatches) {
+            return sourceGroups.map(function (group, i) {
+                var idx = feedTargetIndex(group, i);
+                return targetMatches[idx] || targetMatches[i] || null;
+            }).filter(Boolean);
+        }
+
         function alignColumn(sourceGroups, targetMatches) {
             if (!sourceGroups.length || !targetMatches.length) return;
             var gap = 18;
@@ -1220,16 +1251,22 @@ function alignDrawSheet() {
                     addMargin(sourceGroups[i], (previous.bottom + gap) - current.top);
                 }
             }
+            var pairedTargets = resolveFeedTargets(sourceGroups, targetMatches);
             var mids = sourceGroups.map(groupMid);
-            if (targetMatches[0]) {
-                var targetColumn = targetMatches[0].closest(".round");
-                if (targetColumn) addMargin(targetColumn, mids[0] - centerY(targetMatches[0]));
+            if (pairedTargets[0]) {
+                var targetColumn = pairedTargets[0].closest(".round");
+                if (targetColumn) addMargin(targetColumn, mids[0] - centerY(pairedTargets[0]));
             }
-            alignTargetsToSources(mids, targetMatches);
+            for (var n = 0; n < sourceGroups.length; n++) {
+                var target = pairedTargets[n];
+                if (!target) continue;
+                addMargin(target, groupMid(sourceGroups[n]) - centerY(target));
+            }
         }
 
         var qfMatches = Array.from(bracket.querySelectorAll(".quarterfinal_team_semi > .match"));
         var round2Matches = Array.from(bracket.querySelectorAll(".quarterfinal_team_round2 > .match"));
+        // Round 2 groups → QF matches with Upcoming (via data-feed-target)
         alignColumn(round2Groups, qfMatches);
         alignColumn(round1Groups, round2Matches);
 
@@ -1316,15 +1353,17 @@ function alignDrawSheet() {
             addLine(joinX, midY, t.x, midY);
         }
 
-        // Early rounds → next matches
+        // Early rounds → next matches (attach to Upcoming targets, not filled ones)
         if (round1Groups.length && round2Matches.length) {
             round1Groups.forEach(function (group, i) {
-                connectPair(groupMatches(group), round2Matches[i] || null);
+                var target = round2Matches[feedTargetIndex(group, i)] || null;
+                connectPair(groupMatches(group), target);
             });
         }
         if (round2Groups.length && qfMatches.length) {
             round2Groups.forEach(function (group, i) {
-                connectPair(groupMatches(group), qfMatches[i] || null);
+                var target = qfMatches[feedTargetIndex(group, i)] || null;
+                connectPair(groupMatches(group), target);
             });
         }
 

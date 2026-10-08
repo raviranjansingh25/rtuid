@@ -301,7 +301,7 @@ class DrawSheetController extends Controller
                     }
                 }
 
-                $semifinalMatches = distributeMatchSlots($semiSeeds, $semiMatchCount);
+                $semifinalMatches = placeSeededRound($semiSeeds, $semiMatchCount);
                 $groupCounter1 = 1;
                 foreach ($semifinalMatches as $matchIndex => $matchPlayers) {
                     foreach ($matchPlayers as $userId => $userName) {
@@ -392,7 +392,7 @@ class DrawSheetController extends Controller
                     }
                 }
 
-                $quarterfinalMatches = distributeMatchSlots($quarterSeeds, $qfMatchCount);
+                $quarterfinalMatches = placeSeededRound($quarterSeeds, $qfMatchCount);
                 $groupCounter1 = 1;
                 foreach ($quarterfinalMatches as $matchIndex => $matchPlayers) {
                     foreach ($matchPlayers as $userId => $userName) {
@@ -496,7 +496,7 @@ class DrawSheetController extends Controller
                     }
                 }
 
-                $round1Matches = distributeMatchSlots($round1Seeds, $r1MatchCount);
+                $round1Matches = placeSeededRound($round1Seeds, $r1MatchCount);
                 $groupCounter1 = 1;
                 foreach ($round1Matches as $matchIndex => $matchPlayers) {
                     foreach ($matchPlayers as $userId => $userName) {
