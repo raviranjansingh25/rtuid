@@ -13,6 +13,39 @@ class BestTestCertificateRenderer
         return public_path('certificates/color_belt_certificate_blank.jpg');
     }
 
+    /**
+     * Prefer project font (works on live Linux). Fallback to OS fonts.
+     */
+    public static function resolveFontPath(): string
+    {
+        $candidates = [
+            public_path('certificates/fonts/arialbd.ttf'),
+            public_path('certificates/fonts/arial.ttf'),
+            public_path('certificates/fonts/DejaVuSans-Bold.ttf'),
+            public_path('certificates/fonts/DejaVuSans.ttf'),
+            base_path('public/certificates/fonts/arialbd.ttf'),
+            base_path('public/certificates/fonts/arial.ttf'),
+            'C:\\Windows\\Fonts\\arialbd.ttf',
+            'C:\\Windows\\Fonts\\arial.ttf',
+            '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf',
+            '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
+            '/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf',
+            '/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf',
+            '/usr/share/fonts/truetype/freefont/FreeSansBold.ttf',
+            '/usr/share/fonts/truetype/freefont/FreeSans.ttf',
+        ];
+
+        foreach ($candidates as $path) {
+            if ($path && is_file($path) && is_readable($path)) {
+                return $path;
+            }
+        }
+
+        throw new \RuntimeException(
+            'Certificate font not found. Upload arial.ttf to public/certificates/fonts/ on the server.'
+        );
+    }
+
     public static function blankUrl(): string
     {
         // Project serves static files under /public/... (same as admin assets)
@@ -122,10 +155,7 @@ class BestTestCertificateRenderer
         $w = imagesx($img);
         $h = imagesy($img);
         $black = imagecolorallocate($img, 20, 20, 20);
-        $font = 'C:\\Windows\\Fonts\\arialbd.ttf';
-        if (!file_exists($font)) {
-            $font = 'C:\\Windows\\Fonts\\arial.ttf';
-        }
+        $font = self::resolveFontPath();
 
         $data = self::payload($batch, $row);
         $size = max(13, (int) round($w * 0.0165));
