@@ -48,17 +48,32 @@
                                 </thead>
                                 <tbody>
                                     @foreach($athletes as $i => $athlete)
+                                    @php
+                                        $options = $athleteBeltOptions[$athlete->id] ?? [];
+                                        $lastBelt = \App\Models\BestTestAthlete::highestBeltForUser((int) $athlete->id);
+                                        $lastLabel = $lastBelt ? (\App\Models\BestTestAthlete::beltOptions()[$lastBelt] ?? $lastBelt) : null;
+                                    @endphp
                                     <tr>
                                         <td>{{ $i + 1 }}</td>
-                                        <td>{{ trim(($athlete->name ?? '') . ' ' . ($athlete->last_name ?? '')) }}</td>
+                                        <td>
+                                            {{ trim(($athlete->name ?? '') . ' ' . ($athlete->last_name ?? '')) }}
+                                            @if($lastLabel)
+                                            <div class="text-muted small">Last belt: {{ $lastLabel }}</div>
+                                            @endif
+                                        </td>
                                         <td>{{ $athlete->code ?? '-' }}</td>
                                         <td>
+                                            @if(count($options))
                                             <select name="belts[{{ $athlete->id }}]" class="form-control" required>
                                                 <option value="">Select Belt</option>
-                                                @foreach($beltOptions as $key => $label)
+                                                @foreach($options as $key => $label)
                                                 <option value="{{ $key }}" {{ old('belts.'.$athlete->id) == $key ? 'selected' : '' }}>{{ $label }}</option>
                                                 @endforeach
                                             </select>
+                                            @else
+                                            <input type="hidden" name="belts[{{ $athlete->id }}]" value="">
+                                            <span class="text-danger">Highest belt already assigned. No higher belt available.</span>
+                                            @endif
                                         </td>
                                     </tr>
                                     @endforeach

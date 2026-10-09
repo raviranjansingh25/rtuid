@@ -32,6 +32,69 @@ class BestTestAthlete extends Model
         ];
     }
 
+    /** Progression order: low index = lower belt, high index = higher belt */
+    public static function beltRankOrder(): array
+    {
+        return array_keys(self::beltOptions());
+    }
+
+    public static function beltRank(string $beltType): int
+    {
+        $index = array_search($beltType, self::beltRankOrder(), true);
+
+        return $index === false ? -1 : (int) $index;
+    }
+
+    public static function highestBeltForUser(int $userId): ?string
+    {
+        $rows = self::where('user_id', $userId)->pluck('belt_type');
+        $highest = null;
+        $highestRank = -1;
+
+        foreach ($rows as $beltType) {
+            $rank = self::beltRank((string) $beltType);
+            if ($rank > $highestRank) {
+                $highestRank = $rank;
+                $highest = (string) $beltType;
+            }
+        }
+
+        return $highest;
+    }
+
+    /**
+     * Belts available for next apply:
+     * - no previous belt => all options
+     * - has belt (e.g. 4th Geup) => only higher belts (3rd, 2nd, 1st, Poom/Dan)
+     */
+    public static function availableBeltOptionsForUser(int $userId): array
+    {
+        $all = self::beltOptions();
+        $highest = self::highestBeltForUser($userId);
+
+        if (!$highest) {
+            return $all;
+        }
+
+        $minRank = self::beltRank($highest);
+        $available = [];
+
+        foreach ($all as $key => $label) {
+            if (self::beltRank($key) > $minRank) {
+                $available[$key] = $label;
+            }
+        }
+
+        return $available;
+    }
+
+    public static function isBeltAllowedForUser(int $userId, string $beltType): bool
+    {
+        $options = self::availableBeltOptionsForUser($userId);
+
+        return array_key_exists($beltType, $options);
+    }
+
     public function getBeltLabelAttribute(): string
     {
         $options = self::beltOptions();

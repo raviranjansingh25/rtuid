@@ -150,11 +150,16 @@ class BestTestCertificateController extends Controller
             return redirect()->route('subadmin_best_test')->withErrors('Please select athletes first.');
         }
 
+        $athleteBeltOptions = [];
+        foreach ($athletes as $athlete) {
+            $athleteBeltOptions[$athlete->id] = BestTestAthlete::availableBeltOptionsForUser((int) $athlete->id);
+        }
+
         return view('subadmin.best_test.apply')->with($this->subadminViewData([
             'title' => 'Best Test Certificate - Apply',
             'page_title' => 'Exam Details & Belt',
             'athletes' => $athletes,
-            'beltOptions' => BestTestAthlete::beltOptions(),
+            'athleteBeltOptions' => $athleteBeltOptions,
         ]));
     }
 
@@ -177,8 +182,6 @@ class BestTestCertificateController extends Controller
             return back()->withErrors('No valid athletes found.')->withInput();
         }
 
-        $beltOptions = BestTestAthlete::beltOptions();
-
         DB::beginTransaction();
         try {
             $batch = BestTestBatch::create([
@@ -191,8 +194,21 @@ class BestTestCertificateController extends Controller
 
             foreach ($athletes as $athlete) {
                 $belt = $request->input('belts.' . $athlete->id);
-                if (empty($beltOptions[$belt])) {
-                    throw new \Exception('Invalid belt selected for athlete ID ' . $athlete->id);
+                $allowed = BestTestAthlete::availableBeltOptionsForUser((int) $athlete->id);
+
+                if (empty($allowed)) {
+                    throw new \Exception(
+                        trim(($athlete->name ?? '') . ' ' . ($athlete->last_name ?? '')) .
+                        ' already has the highest belt. No further belt available.'
+                    );
+                }
+
+                if (empty($belt) || empty($allowed[$belt])) {
+                    throw new \Exception(
+                        'Invalid / lower belt selected for ' .
+                        trim(($athlete->name ?? '') . ' ' . ($athlete->last_name ?? '')) .
+                        '. Only higher belts are allowed.'
+                    );
                 }
 
                 BestTestAthlete::create([
