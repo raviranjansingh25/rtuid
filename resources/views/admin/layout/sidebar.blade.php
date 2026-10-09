@@ -98,6 +98,14 @@ $permission = $pardata->pluck('controller')->toArray();
                     </a>
                 </li>
                 @endif
+
+                <li>
+                    <a href="{{ route('admin_best_test') }}">
+                        <i class="fas fa-certificate"></i>
+                        <span key="t-dashboards">Best Test Certificate</span>
+                    </a>
+                </li>
+
                 
                 @if (in_array('EventController', $permission) || in_array('EventCategoryController', $permission) || $admin->id==1)
                 <li>

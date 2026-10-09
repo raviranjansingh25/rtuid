@@ -29,6 +29,7 @@ use App\Http\Controllers\admin\UserController;
 use App\Http\Controllers\admin\PageController;
 use App\Http\Controllers\admin\BannerController;
 use App\Http\Controllers\admin\DrawSheetController;
+use App\Http\Controllers\admin\BestTestCertificateController;
 use App\Http\Controllers\admin\TagController;
 use App\Http\Controllers\admin\SpecialitiesController;
 use App\Http\Controllers\MPESAController;
@@ -58,6 +59,7 @@ use App\Http\Controllers\subadmin\ApplyTournamentController as SubadminApplyTour
 use App\Http\Controllers\subadmin\CoachController as SubadminCoachController;
 use App\Http\Controllers\subadmin\RefereeController as SubadminRefereeController;
 use App\Http\Controllers\subadmin\DrawSheetController as SubadminDrawSheetController;
+use App\Http\Controllers\subadmin\BestTestCertificateController as SubadminBestTestCertificateController;
 use App\Http\Controllers\subadmin\TournamentController as SubadminTournamentController;
 use App\Http\Controllers\subadmin\OtherCardEventController as SubadminCardController;
 
@@ -389,6 +391,18 @@ Route::group(['prefix' => 'subadmin', 'middleware' => 'ifSubadmin'], function ()
     Route::get('/draw-sheet-name/{id}', [SubadminDrawSheetController::class, 'indexname'])->name('subadmin_draw_sheet_name');
     Route::get('/draw-sheet-name-data/{id}', [SubadminDrawSheetController::class, 'anydataname'])->name('subadmin_draw_sheet_name_data');
 
+    /*---------------------Best Test Certificate---------------------*/
+    Route::get('/best-test-certificate', [SubadminBestTestCertificateController::class, 'index'])->name('subadmin_best_test');
+    Route::get('/best-test-certificate/athlete-data', [SubadminBestTestCertificateController::class, 'athleteData'])->name('subadmin_best_test_athlete_data');
+    Route::post('/best-test-certificate/prepare', [SubadminBestTestCertificateController::class, 'prepareApply'])->name('subadmin_best_test_prepare');
+    Route::get('/best-test-certificate/apply', [SubadminBestTestCertificateController::class, 'applyForm'])->name('subadmin_best_test_apply_form');
+    Route::post('/best-test-certificate/apply-save', [SubadminBestTestCertificateController::class, 'applySave'])->name('subadmin_best_test_apply_save');
+    Route::get('/best-test-certificate/list', [SubadminBestTestCertificateController::class, 'list'])->name('subadmin_best_test_list');
+    Route::get('/best-test-certificate/list-data', [SubadminBestTestCertificateController::class, 'listData'])->name('subadmin_best_test_list_data');
+    Route::get('/best-test-certificate/view/{id}', [SubadminBestTestCertificateController::class, 'viewBatch'])->name('subadmin_best_test_view');
+    Route::get('/best-test-certificate/certificates/{id}', [SubadminBestTestCertificateController::class, 'certificates'])->name('subadmin_best_test_certificates');
+    Route::get('/best-test-certificate/download/{batchId}/{athleteId}', [SubadminBestTestCertificateController::class, 'download'])->name('subadmin_best_test_certificate_download');
+
     Route::any('reg_form_single/{id}',[SubadminCardController::class,'reg_form_single'])->name('subadmin.group_reg_form');
     Route::any('single_card/{id}',[SubadminCardController::class,'single_card'])->name('subadmin.single_card');
     Route::any('all_single_reg_form/{id}',[SubadminCardController::class,'all_single_reg_form'])->name('subadmin.all_single_reg_form');
@@ -630,12 +644,14 @@ Route::group(['prefix' => 'admin', 'middleware' => 'ifadmin'], function () {
         Route::get('/draw-sheet/status', [DrawSheetController::class, 'changeStatus'])->name('draw_sheet_status');
         Route::get('/draw-sheet-name/{id}', [DrawSheetController::class, 'indexname'])->name('draw_sheet_name');
         Route::get('/draw-sheet-name-data/{id}', [DrawSheetController::class, 'anydataname'])->name('draw_sheet_name_data');
+
         Route::post('/reset-bracket', [DrawSheetController::class, 'resetBracket'])->name('reset.bracket');
         Route::post('/send-otp', [DrawSheetController::class, 'sendOtp'])->name('send.otp');
         Route::post('/verify-otp-and-reset', [DrawSheetController::class, 'verifyOtpAndReset'])->name('verify.otp.and.reset');
         Route::post('/verify-draw-sheet-subadmin', [DrawSheetController::class, 'verifyDrawSheetForSubadmin'])->name('verify.draw.sheet.subadmin');
 
         /*-----------------------Admin Draw Sheet routes End---------------------*/
+
         
         
         /*---------------------Admin Category routes Start---------------------*/
@@ -756,4 +772,12 @@ Route::group(['prefix' => 'admin', 'middleware' => 'ifadmin'], function () {
 
        
     });
+
+    /*---------------------Best Test Certificate (State Grade) - all admins---------------------*/
+    Route::get('/best-test-certificate', [BestTestCertificateController::class, 'index'])->name('admin_best_test');
+    Route::get('/best-test-certificate/list-data', [BestTestCertificateController::class, 'listData'])->name('admin_best_test_list_data');
+    Route::get('/best-test-certificate/grade/{id}', [BestTestCertificateController::class, 'grade'])->name('admin_best_test_grade');
+    Route::post('/best-test-certificate/grade-save/{id}', [BestTestCertificateController::class, 'gradeSave'])->name('admin_best_test_grade_save');
+    Route::get('/best-test-certificate/certificates/{id}', [BestTestCertificateController::class, 'certificates'])->name('admin_best_test_certificates');
+    Route::get('/best-test-certificate/download/{batchId}/{athleteId}', [BestTestCertificateController::class, 'download'])->name('admin_best_test_certificate_download');
 });

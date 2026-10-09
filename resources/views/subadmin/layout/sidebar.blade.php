@@ -83,6 +83,18 @@
                     </a>
                 </li>
                 @endif
+
+                <li>
+                    <a href="javascript: void(0);" class="has-arrow">
+                        <i class="fas fa-certificate"></i>
+                        <span>Best Test Certificate</span>
+                    </a>
+                    <ul class="sub-menu" aria-expanded="false">
+                        <li><a href="{{ route('subadmin_best_test') }}">Select Athletes</a></li>
+                        <li><a href="{{ route('subadmin_best_test_list') }}">Applications</a></li>
+                    </ul>
+                </li>
+                
                 
             </ul>
         </div>
