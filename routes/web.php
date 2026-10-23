@@ -30,6 +30,7 @@ use App\Http\Controllers\admin\PageController;
 use App\Http\Controllers\admin\BannerController;
 use App\Http\Controllers\admin\DrawSheetController;
 use App\Http\Controllers\admin\BestTestCertificateController;
+use App\Http\Controllers\admin\MeritCertificateController;
 use App\Http\Controllers\admin\TagController;
 use App\Http\Controllers\admin\SpecialitiesController;
 use App\Http\Controllers\MPESAController;
@@ -196,6 +197,8 @@ Route::group(['middleware' => 'vender'], function () {
 Route::group(['prefix' => 'coach', 'middleware' => 'vendernot'], function () {
     Route::get('/dashboard', [CoachDashboardController::class, 'index'])->name('coach_dashboard');
     Route::get('/idcard', [CoachDashboardController::class, 'coachidcard'])->name('coach_idcard');
+    Route::get('/certificate', [CoachDashboardController::class, 'certificates'])->name('coach_certificate');
+    Route::get('/certificate/download/{id}', [CoachDashboardController::class, 'downloadCertificate'])->name('coach_certificate_download');
     Route::get('/change-password', [CoachLoginController::class, 'change_password'])->name('coach_change_password');
     Route::post('/change-password/save', [CoachLoginController::class, 'change_password_save'])->name('coach_change_password_save');
     Route::get('/view-profile', [CoachLoginController::class, 'view_profile'])->name('coach_view_profile');
@@ -421,6 +424,8 @@ Route::group(['middleware' => 'ifnotReferee'], function () {
 Route::group(['prefix' => 'referee', 'middleware' => 'ifReferee'], function () {
     Route::get('/dashboard', [RefereeDashboardController::class, 'index'])->name('referee_dashboard');
     Route::get('/idcard', [RefereeDashboardController::class, 'refereeidcard'])->name('referee_idcard');
+    Route::get('/certificate', [RefereeDashboardController::class, 'certificates'])->name('referee_certificate');
+    Route::get('/certificate/download/{id}', [RefereeDashboardController::class, 'downloadCertificate'])->name('referee_certificate_download');
     Route::get('/change-password', [RefereeLoginController::class, 'change_password'])->name('referee_change_password');
     Route::post('/change-password/save', [RefereeLoginController::class, 'change_password_save'])->name('referee_change_password_save');
     Route::get('/view-profile', [RefereeLoginController::class, 'view_profile'])->name('referee_view_profile');
@@ -780,4 +785,16 @@ Route::group(['prefix' => 'admin', 'middleware' => 'ifadmin'], function () {
     Route::post('/best-test-certificate/grade-save/{id}', [BestTestCertificateController::class, 'gradeSave'])->name('admin_best_test_grade_save');
     Route::get('/best-test-certificate/certificates/{id}', [BestTestCertificateController::class, 'certificates'])->name('admin_best_test_certificates');
     Route::get('/best-test-certificate/download/{batchId}/{athleteId}', [BestTestCertificateController::class, 'download'])->name('admin_best_test_certificate_download');
+
+    /*---------------------Coach / Referee Merit Certificate---------------------*/
+    Route::get('/merit-certificate', [MeritCertificateController::class, 'index'])->name('admin_merit_certificate');
+    Route::get('/merit-certificate/recipient-data', [MeritCertificateController::class, 'recipientData'])->name('admin_merit_certificate_recipient_data');
+    Route::post('/merit-certificate/prepare', [MeritCertificateController::class, 'prepare'])->name('admin_merit_certificate_prepare');
+    Route::get('/merit-certificate/form', [MeritCertificateController::class, 'form'])->name('admin_merit_certificate_form');
+    Route::post('/merit-certificate/save', [MeritCertificateController::class, 'save'])->name('admin_merit_certificate_save');
+    Route::get('/merit-certificate/list', [MeritCertificateController::class, 'list'])->name('admin_merit_certificate_list');
+    Route::get('/merit-certificate/list-data', [MeritCertificateController::class, 'listData'])->name('admin_merit_certificate_list_data');
+    Route::get('/merit-certificate/view/{id}', [MeritCertificateController::class, 'viewBatch'])->name('admin_merit_certificate_view');
+    Route::get('/merit-certificate/certificates/{id}', [MeritCertificateController::class, 'certificates'])->name('admin_merit_certificate_certificates');
+    Route::get('/merit-certificate/download/{batchId}/{certId}', [MeritCertificateController::class, 'download'])->name('admin_merit_certificate_download');
 });

@@ -74,4 +74,42 @@ class dashboardController extends Controller
         
         return view('coach.idcard')->with($data);
     }
+
+    public function certificates()
+    {
+        $coach = Auth::guard('vender')->user();
+        $certificates = \App\Models\MeritCertificate::with('batch')
+            ->where('recipient_id', $coach->id)
+            ->whereHas('batch', function ($q) {
+                $q->where('recipient_type', 'coach');
+            })
+            ->orderBy('id', 'DESC')
+            ->get();
+
+        return view('coach.certificate')->with([
+            'title' => 'My Certificates',
+            'certificates' => $certificates,
+        ]);
+    }
+
+    public function downloadCertificate($id)
+    {
+        $coach = Auth::guard('vender')->user();
+        $row = \App\Models\MeritCertificate::with('batch')
+            ->where('id', $id)
+            ->where('recipient_id', $coach->id)
+            ->whereHas('batch', function ($q) {
+                $q->where('recipient_type', 'coach');
+            })
+            ->firstOrFail();
+
+        $binary = \App\Services\MeritCertificateRenderer::renderJpg($row->batch, $row);
+        $filename = 'coach-certificate-' . ($row->serial_no ?: $row->id) . '.jpg';
+        $filename = preg_replace('/[^A-Za-z0-9_\-\.]/', '-', $filename);
+
+        return response($binary, 200, [
+            'Content-Type' => 'image/jpeg',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ]);
+    }
 }

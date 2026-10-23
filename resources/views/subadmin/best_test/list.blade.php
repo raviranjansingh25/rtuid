@@ -38,12 +38,20 @@
         </div>
     </div>
 </div>
+@endsection
+
+@push('js')
 <script>
 $(document).ready(function () {
     $('.table_data').DataTable({
         bFilter: false,
         order: [],
-        ajax: "{{ route('subadmin_best_test_list_data') }}",
+        ajax: {
+            url: "{{ route('subadmin_best_test_list_data') }}",
+            error: function (xhr) {
+                console.error('Best Test list error', xhr.status, xhr.responseText);
+            }
+        },
         columns: [
             { data: 'DT_RowIndex', orderable: false, searchable: false },
             { data: 'exam_date' },
@@ -55,4 +63,4 @@ $(document).ready(function () {
     });
 });
 </script>
-@endsection
+@endpush

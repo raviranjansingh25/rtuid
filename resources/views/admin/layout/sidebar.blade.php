@@ -106,6 +106,17 @@ $permission = $pardata->pluck('controller')->toArray();
                     </a>
                 </li>
 
+                <li>
+                    <a href="javascript: void(0);" class="has-arrow waves-effect">
+                        <i class="fas fa-award"></i>
+                        <span key="t-dashboards">Coach / Referee Cert</span>
+                    </a>
+                    <ul class="sub-menu" aria-expanded="false">
+                        <li><a href="{{ route('admin_merit_certificate') }}">Generate Certificate</a></li>
+                        <li><a href="{{ route('admin_merit_certificate_list') }}">Issued Certificates</a></li>
+                    </ul>
+                </li>
+
                 
                 @if (in_array('EventController', $permission) || in_array('EventCategoryController', $permission) || $admin->id==1)
                 <li>

@@ -26,6 +26,13 @@ $admin= Auth::guard('vender')->user();
                 </li>
 
                 <li>
+                    <a href="{{route('coach_certificate')}}">
+                        <i class="fas fa-certificate"></i>
+                        <span key="t-dashboards">My Certificate</span>
+                    </a>
+                </li>
+
+                <li>
                     <a href="{{route('coach_user')}}">
                         <i class="fas fa-user"></i>
                         <span key="t-dashboards">Athletes</span>

@@ -74,4 +74,42 @@ class dashboardController extends Controller
         
         return view('referee.idcard')->with($data);
     }
+
+    public function certificates()
+    {
+        $referee = Auth::guard('referee')->user();
+        $certificates = \App\Models\MeritCertificate::with('batch')
+            ->where('recipient_id', $referee->id)
+            ->whereHas('batch', function ($q) {
+                $q->where('recipient_type', 'referee');
+            })
+            ->orderBy('id', 'DESC')
+            ->get();
+
+        return view('referee.certificate')->with([
+            'title' => 'My Certificates',
+            'certificates' => $certificates,
+        ]);
+    }
+
+    public function downloadCertificate($id)
+    {
+        $referee = Auth::guard('referee')->user();
+        $row = \App\Models\MeritCertificate::with('batch')
+            ->where('id', $id)
+            ->where('recipient_id', $referee->id)
+            ->whereHas('batch', function ($q) {
+                $q->where('recipient_type', 'referee');
+            })
+            ->firstOrFail();
+
+        $binary = \App\Services\MeritCertificateRenderer::renderJpg($row->batch, $row);
+        $filename = 'referee-certificate-' . ($row->serial_no ?: $row->id) . '.jpg';
+        $filename = preg_replace('/[^A-Za-z0-9_\-\.]/', '-', $filename);
+
+        return response($binary, 200, [
+            'Content-Type' => 'image/jpeg',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ]);
+    }
 }

@@ -184,9 +184,14 @@ class BestTestCertificateController extends Controller
 
         DB::beginTransaction();
         try {
+            // Prefer subadmin district so list scoping always matches logged-in subadmin
+            $batchDistrict = !empty($admin->district) && (string) $admin->district !== 'all'
+                ? (string) $admin->district
+                : (string) ($athletes->first()->district ?? '');
+
             $batch = BestTestBatch::create([
                 'created_by' => $admin->id ?? null,
-                'district' => $athletes->first()->district ?? ($admin->district ?? null),
+                'district' => $batchDistrict !== '' ? $batchDistrict : null,
                 'exam_date' => $request->exam_date,
                 'place' => $request->place,
                 'status' => 'applied',
@@ -244,7 +249,7 @@ class BestTestCertificateController extends Controller
     {
         $admin = $this->subadmin();
         $query = BestTestBatch::withCount('athletes')->orderBy('id', 'DESC');
-        $this->applyDistrictScopeOnColumn($query, 'district', $admin);
+        $this->scopeBestTestBatches($query, $admin);
 
         if (!empty($request['status'])) {
             $query->where('status', $request['status']);
@@ -263,7 +268,7 @@ class BestTestCertificateController extends Controller
             ->addColumn('action', function ($row) {
                 $html = '<a href="' . route('subadmin_best_test_view', $row->id) . '" class="btn btn-sm btn-info">View</a>';
                 if ($row->status === 'graded') {
-                    $html .= ' <a href="' . route('subadmin_best_test_certificates', $row->id) . '" class="btn btn-sm btn-success">Certificates</a>';
+                    $html .= ' <a href="' . route('subadmin_best_test_certificates', $row->id) . '" class="btn btn-sm btn-success">Download Certificates</a>';
                 }
                 return $html;
             })
@@ -326,8 +331,36 @@ class BestTestCertificateController extends Controller
     {
         $admin = $this->subadmin();
         $query = BestTestBatch::with(['athletes.user'])->where('id', $id);
-        $this->applyDistrictScopeOnColumn($query, 'district', $admin);
+        $this->scopeBestTestBatches($query, $admin);
 
         return $query->firstOrFail();
+    }
+
+    /**
+     * Subadmin sees own created batches + same-district batches.
+     * All-districts subadmin sees everything.
+     */
+    protected function scopeBestTestBatches($query, $admin = null)
+    {
+        $admin = $admin ?: $this->subadmin();
+
+        if ($this->canAccessAllDistricts($admin)) {
+            return $query;
+        }
+
+        $district = (string) ($admin->district ?? '');
+        $adminId = (int) ($admin->id ?? 0);
+
+        return $query->where(function ($q) use ($district, $adminId) {
+            if ($adminId > 0) {
+                $q->where('created_by', $adminId);
+            }
+            if ($district !== '' && $district !== 'all') {
+                $q->orWhere('district', $district);
+                if (ctype_digit($district)) {
+                    $q->orWhere('district', (int) $district);
+                }
+            }
+        });
     }
 }

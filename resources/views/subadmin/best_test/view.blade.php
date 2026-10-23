@@ -32,6 +32,9 @@
                                 <th>Code</th>
                                 <th>Belt</th>
                                 <th>Grade</th>
+                                @if($batch->status === 'graded')
+                                <th>Certificate</th>
+                                @endif
                             </tr>
                         </thead>
                         <tbody>
@@ -42,12 +45,21 @@
                                 <td>{{ $row->user->code ?? ($row->user->code_id ?? '-') }}</td>
                                 <td>{{ $row->belt_label }}</td>
                                 <td>{{ $row->grade ?: 'Pending' }}</td>
+                                @if($batch->status === 'graded')
+                                <td>
+                                    @if($row->certificate_ready)
+                                    <a href="{{ route('subadmin_best_test_certificate_download', [$batch->id, $row->id]) }}" class="btn btn-sm btn-success">Download</a>
+                                    @else
+                                    <span class="text-muted">-</span>
+                                    @endif
+                                </td>
+                                @endif
                             </tr>
                             @endforeach
                         </tbody>
                     </table>
                     @if($batch->status === 'graded')
-                    <a href="{{ route('subadmin_best_test_certificates', $batch->id) }}" class="btn btn-success">View Certificates</a>
+                    <a href="{{ route('subadmin_best_test_certificates', $batch->id) }}" class="btn btn-primary">View / Print All Certificates</a>
                     @else
                     <div class="alert alert-info mb-0">Waiting for State Admin to enter grades. Certificates will appear after grading.</div>
                     @endif

@@ -25,6 +25,13 @@ $admin= Auth::guard('vender')->user();
                     </a>
                 </li>
 
+                <li>
+                    <a href="{{route('referee_certificate')}}">
+                        <i class="fas fa-certificate"></i>
+                        <span key="t-dashboards">My Certificate</span>
+                    </a>
+                </li>
+
                 <!-- <li>
                     <a href="{{route('referee_user')}}">
                         <i class="fas fa-user"></i>
