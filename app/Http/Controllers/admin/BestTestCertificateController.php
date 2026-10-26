@@ -127,10 +127,10 @@ class BestTestCertificateController extends Controller
             ->firstOrFail();
 
         $binary = BestTestCertificateRenderer::renderJpg($batch, $row);
-        $filename = 'color-belt-certificate-' . $row->id . '.jpg';
+        $filename = 'color-belt-certificate-' . $row->id . '.png';
 
         return response($binary, 200, [
-            'Content-Type' => 'image/jpeg',
+            'Content-Type' => 'image/png',
             'Content-Disposition' => 'attachment; filename="' . $filename . '"',
         ]);
     }

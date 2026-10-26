@@ -14,31 +14,46 @@
         height: auto;
         display: block;
     }
-    .btc-field {
+    .btc-line {
         position: absolute;
-        color: #333;
+        left: 12.5%;
+        right: 13.2%;
+        display: flex;
+        align-items: baseline;
+        gap: 0.45cqi;
+        transform: translateY(-88%);
         font-family: Arial, Helvetica, sans-serif;
-        font-weight: 700;
-        font-size: 1.7cqi;
+        font-size: 1.65cqi;
+        font-weight: 400;
+        color: #333;
         line-height: 1;
         white-space: nowrap;
-        text-transform: uppercase;
         pointer-events: none;
-        letter-spacing: 0.15px;
-        transform: translateY(-72%);
+    }
+    .btc-l1 { top: 60.5%; }
+    .btc-l2 { top: 63.9%; }
+    .btc-l3 { top: 67.3%; }
+    .btc-l4 { top: 70.7%; }
+    .btc-l5 { top: 74.1%; }
+    .btc-l6 { top: 77.5%; }
+    .btc-lbl { flex: 0 0 auto; }
+    .btc-fill {
+        flex: 1 1 auto;
+        min-width: 8cqi;
+        text-align: center;
+        font-weight: 700;
+        letter-spacing: 0.2px;
+        text-transform: uppercase;
+        border-bottom: 0.16cqi dotted #444;
+        padding: 0 0.35cqi 0.12cqi;
         overflow: hidden;
         text-overflow: ellipsis;
     }
-    /* Live blank already has labels + dotted lines. Only values sit on those lines. */
-    .btc-no { left: 16.8%; top: 57.6%; max-width: 12%; }
-    .btc-date { left: 73.5%; top: 57.6%; max-width: 16%; }
-    .btc-name { left: 43.2%; top: 60.9%; max-width: 42%; }
-    .btc-father { left: 28.8%; top: 64.1%; max-width: 22%; }
-    .btc-district { left: 54.5%; top: 64.1%; max-width: 16%; }
-    .btc-exam { left: 60.2%; top: 67.2%; max-width: 14%; }
-    .btc-place { left: 76%; top: 67.2%; max-width: 12%; }
-    .btc-belt { left: 33.8%; top: 70.3%; max-width: 28%; }
-    .btc-grade { left: 74%; top: 73.5%; max-width: 12%; }
+    .btc-fill-sm {
+        flex: 0.75 1 auto;
+        min-width: 10cqi;
+        max-width: 26cqi;
+    }
     .btc-actions { margin: 10px 0 18px; line-height: normal; }
     @media print {
         .no-print { display: none !important; }
