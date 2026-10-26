@@ -182,50 +182,43 @@ class BestTestCertificateRenderer
         $regular = self::resolveFontPath(false);
         $bold = self::resolveFontPath(true);
         $data = self::payload($batch, $row);
-        $size = max(11, (int) round($w * 0.0166));
-        $left = (int) round($w * 0.125);
-        $right = (int) round($w * 0.868);
-        $mid = (int) round($w * 0.62);
-        $lineH = (int) round($h * 0.034);
-        $y = (int) round($h * 0.605);
+        $size = max(11, (int) round($w * 0.0154));
 
-        $x = self::drawText($img, $left, $y, 'No. ', $size, $regular, $ink);
-        self::fillDots($img, $x, $y, $mid - 16, $data['no'], $size, $regular, $bold, $ink);
-        $x = self::drawText($img, $mid + 8, $y, 'Date: ', $size, $regular, $ink);
-        self::fillDots($img, $x, $y, $right, $data['date'], $size, $regular, $bold, $ink);
+        // Same places and dotted lengths as the original printed form.
+        $y1 = (int) round($h * 0.603);
+        $y2 = (int) round($h * 0.637);
+        $y3 = (int) round($h * 0.672);
+        $y4 = (int) round($h * 0.706);
+        $y5 = (int) round($h * 0.741);
+        $y6 = (int) round($h * 0.775);
 
-        $y += $lineH;
-        $x = self::drawText($img, $left, $y, 'This is to certify that Mr./Ms. ', $size, $regular, $ink);
-        self::fillDots($img, $x, $y, $right, $data['name'], $size, $regular, $bold, $ink);
+        self::drawText($img, (int) round($w * 0.128), $y1, 'No.', $size, $regular, $ink);
+        self::drawText($img, (int) round($w * 0.195), $y1, $data['no'], $size, $bold, $ink);
+        self::drawText($img, (int) round($w * 0.648), $y1, 'Date:', $size, $regular, $ink);
+        self::dottedField($img, $w, 0.708, 0.858, $y1, $data['date'], $size, $regular, $bold, $ink);
 
-        $y += $lineH;
-        $x = self::drawText($img, $left, $y, 'Son / Daughter ', $size, $regular, $ink);
-        $ofW = self::textWidth(' of ', $size, $regular);
-        $distLblW = self::textWidth(' District, has', $size, $regular);
-        $split = (int) round(($x + ($right - $distLblW - $ofW)) / 2);
-        self::fillDots($img, $x, $y, $split, $data['father'], $size, $regular, $bold, $ink);
-        $x = self::drawText($img, $split, $y, ' of ', $size, $regular, $ink);
-        self::fillDots($img, $x, $y, $right - $distLblW, $data['district'], $size, $regular, $bold, $ink);
-        self::drawText($img, $right - $distLblW, $y, ' District, has', $size, $regular, $ink);
+        self::drawText($img, (int) round($w * 0.128), $y2, 'This is to certify that Mr./Ms.', $size, $regular, $ink);
+        self::dottedField($img, $w, 0.372, 0.858, $y2, $data['name'], $size, $regular, $bold, $ink);
 
-        $y += $lineH;
-        $x = self::drawText($img, $left, $y, 'qualified in Color Belt Promotion Test Held on ', $size, $regular, $ink);
-        $atW = self::textWidth(' at ', $size, $regular);
-        $split = $x + (int) round(($right - $x - $atW) * 0.50);
-        self::fillDots($img, $x, $y, $split, $data['exam_date'], $size, $regular, $bold, $ink);
-        $x = self::drawText($img, $split, $y, ' at ', $size, $regular, $ink);
-        self::fillDots($img, $x, $y, $right, $data['place'], $size, $regular, $bold, $ink);
+        self::drawText($img, (int) round($w * 0.128), $y3, 'Son / Daughter', $size, $regular, $ink);
+        self::dottedField($img, $w, 0.270, 0.541, $y3, $data['father'], $size, $regular, $bold, $ink);
+        self::drawText($img, (int) round($w * 0.545), $y3, 'of', $size, $regular, $ink);
+        self::dottedField($img, $w, 0.565, 0.762, $y3, $data['district'], $size, $regular, $bold, $ink);
+        self::drawText($img, (int) round($w * 0.768), $y3, 'District, has', $size, $regular, $ink);
 
-        $y += $lineH;
-        $x = self::drawText($img, $left, $y, 'is permitted to wear ', $size, $regular, $ink);
-        $beltW = self::textWidth(' belt.', $size, $regular);
-        self::fillDots($img, $x, $y, $right - $beltW, $data['belt'], $size, $regular, $bold, $ink);
-        self::drawText($img, $right - $beltW, $y, ' belt.', $size, $regular, $ink);
+        self::drawText($img, (int) round($w * 0.128), $y4, 'qualified in Color Belt Promotion Test Held on', $size, $regular, $ink);
+        self::dottedField($img, $w, 0.532, 0.691, $y4, $data['exam_date'], $size, $regular, $bold, $ink);
+        self::drawText($img, (int) round($w * 0.695), $y4, 'at', $size, $regular, $ink);
+        self::dottedField($img, $w, 0.708, 0.858, $y4, $data['place'], $size, $regular, $bold, $ink);
 
-        $y += $lineH;
-        self::drawText($img, $left, $y, 'He/She is not permitted to teach taekwondo', $size, $regular, $ink);
-        $x = self::drawText($img, $mid + 8, $y, 'Grade: ', $size, $regular, $ink);
-        self::fillDots($img, $x, $y, $right, $data['grade'], $size, $regular, $bold, $ink);
+        self::dottedField($img, $w, 0.142, 0.369, $y5, '', $size, $regular, $bold, $ink);
+        self::drawText($img, (int) round($w * 0.372), $y5, 'and is permitted to wear', $size, $regular, $ink);
+        self::dottedField($img, $w, 0.593, 0.822, $y5, $data['belt'], $size, $regular, $bold, $ink);
+        self::drawText($img, (int) round($w * 0.828), $y5, 'belt.', $size, $regular, $ink);
+
+        self::drawText($img, (int) round($w * 0.128), $y6, 'He/She is not permitted to teach taekwondo', $size, $regular, $ink);
+        self::drawText($img, (int) round($w * 0.725), $y6, 'Grade:', $size, $regular, $ink);
+        self::dottedField($img, $w, 0.779, 0.858, $y6, $data['grade'], $size, $regular, $bold, $ink);
 
         ob_start();
         imagepng($img, null, 6);
@@ -256,29 +249,41 @@ class BestTestCertificateRenderer
     }
 
     /**
-     * Fill a span with dots and sit the value in the field (filled-form look).
+     * Dotted field of a fixed length (same as the original printed form).
      */
-    protected static function fillDots($img, int $x, int $y, int $end, string $value, int $size, string $regular, string $bold, $color): int
+    protected static function dottedField($img, int $w, float $x0pct, float $x1pct, int $y, string $value, int $size, string $regular, string $bold, $color): void
     {
+        $x0 = (int) round($w * $x0pct);
+        $x1 = (int) round($w * $x1pct);
         $value = trim($value);
-        $avail = max(0, $end - $x);
-        $valW = self::textWidth($value, $size, $bold);
-        $dotW = max(1, self::textWidth('.', $size, $regular));
-        $dotsSpace = max(0, $avail - $valW);
-        $totalDots = max(0, (int) floor($dotsSpace / $dotW) - 1);
-        $leftDots = (int) floor($totalDots * 0.28);
-        $rightDots = $totalDots - $leftDots;
-
-        if ($leftDots > 0) {
-            $x = self::drawText($img, $x, $y, str_repeat('.', $leftDots), $size, $regular, $color);
+        $valW = ($value === '') ? 0 : self::textWidth($value, $size, $bold);
+        $avail = max(0, $x1 - $x0);
+        if ($valW > $avail) {
+            $valW = $avail;
         }
+        $remain = max(0, $avail - $valW);
         if ($value !== '') {
-            $x = self::drawText($img, $x, $y, $value, $size, $bold, $color);
+            $split = $x0 + (int) floor($remain * 0.18);
+            self::drawDotsTo($img, $x0, $split, $y, $size, $regular, $color);
+            self::drawText($img, $split, $y, $value, $size, $bold, $color);
+            self::drawDotsTo($img, $split + $valW, $x1, $y, $size, $regular, $color);
+        } else {
+            self::drawDotsTo($img, $x0, $x1, $y, $size, $regular, $color);
         }
-        if ($rightDots > 0) {
-            $x = self::drawText($img, $x, $y, str_repeat('.', $rightDots), $size, $regular, $color);
-        }
+    }
 
-        return $end;
+    protected static function drawDotsTo($img, int $x, int $end, int $y, int $size, string $font, $color): void
+    {
+        if ($end - $x < 2) {
+            return;
+        }
+        $dotW = max(1, self::textWidth('.', $size, $font));
+        $n = (int) floor(($end - $x) / $dotW);
+        while ($n > 0 && ($x + self::textWidth(str_repeat('.', $n), $size, $font)) > $end) {
+            $n--;
+        }
+        if ($n > 0) {
+            self::drawText($img, $x, $y, str_repeat('.', $n), $size, $font, $color);
+        }
     }
 }

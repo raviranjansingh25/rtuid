@@ -14,45 +14,29 @@
         height: auto;
         display: block;
     }
-    .btc-line {
+    .btc-t {
         position: absolute;
-        left: 12.5%;
-        right: 13.2%;
-        display: flex;
-        align-items: baseline;
-        gap: 0.45cqi;
         transform: translateY(-88%);
         font-family: Arial, Helvetica, sans-serif;
-        font-size: 1.65cqi;
+        font-size: 1.54cqi;
         font-weight: 400;
         color: #333;
         line-height: 1;
         white-space: nowrap;
         pointer-events: none;
     }
-    .btc-l1 { top: 60.5%; }
-    .btc-l2 { top: 63.9%; }
-    .btc-l3 { top: 67.3%; }
-    .btc-l4 { top: 70.7%; }
-    .btc-l5 { top: 74.1%; }
-    .btc-l6 { top: 77.5%; }
-    .btc-lbl { flex: 0 0 auto; }
-    .btc-fill {
-        flex: 1 1 auto;
-        min-width: 8cqi;
-        text-align: center;
+    .btc-b {
         font-weight: 700;
-        letter-spacing: 0.2px;
         text-transform: uppercase;
-        border-bottom: 0.16cqi dotted #444;
-        padding: 0 0.35cqi 0.12cqi;
+        letter-spacing: 0.15px;
+    }
+    .btc-d {
         overflow: hidden;
         text-overflow: ellipsis;
-    }
-    .btc-fill-sm {
-        flex: 0.75 1 auto;
-        min-width: 10cqi;
-        max-width: 26cqi;
+        text-align: center;
+        border-bottom: 0.14cqi dotted #444;
+        padding-bottom: 0.12cqi;
+        box-sizing: border-box;
     }
     .btc-actions { margin: 10px 0 18px; line-height: normal; }
     @media print {
