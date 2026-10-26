@@ -14,26 +14,27 @@ class BestTestCertificateRenderer
     }
 
     /**
-     * Prefer project font (works on live Linux). Fallback to OS fonts.
+     * Same Arial as the original Color Belt certificate (1st image).
      */
-    public static function resolveFontPath(): string
+    public static function resolveFontPath(bool $bold = false): string
     {
-        $candidates = [
-            public_path('certificates/fonts/arialbd.ttf'),
-            public_path('certificates/fonts/arial.ttf'),
-            public_path('certificates/fonts/DejaVuSans-Bold.ttf'),
-            public_path('certificates/fonts/DejaVuSans.ttf'),
-            base_path('public/certificates/fonts/arialbd.ttf'),
-            base_path('public/certificates/fonts/arial.ttf'),
-            'C:\\Windows\\Fonts\\arialbd.ttf',
-            'C:\\Windows\\Fonts\\arial.ttf',
-            '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf',
-            '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
-            '/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf',
-            '/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf',
-            '/usr/share/fonts/truetype/freefont/FreeSansBold.ttf',
-            '/usr/share/fonts/truetype/freefont/FreeSans.ttf',
-        ];
+        $candidates = $bold
+            ? [
+                public_path('certificates/fonts/arialbd.ttf'),
+                base_path('public/certificates/fonts/arialbd.ttf'),
+                'C:\\Windows\\Fonts\\arialbd.ttf',
+                '/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf',
+                '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf',
+                '/usr/share/fonts/truetype/freefont/FreeSansBold.ttf',
+            ]
+            : [
+                public_path('certificates/fonts/arial.ttf'),
+                base_path('public/certificates/fonts/arial.ttf'),
+                'C:\\Windows\\Fonts\\arial.ttf',
+                '/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf',
+                '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
+                '/usr/share/fonts/truetype/freefont/FreeSans.ttf',
+            ];
 
         foreach ($candidates as $path) {
             if ($path && is_file($path) && is_readable($path)) {
@@ -48,7 +49,6 @@ class BestTestCertificateRenderer
 
     public static function blankUrl(): string
     {
-        // Project serves static files under /public/... (same as admin assets)
         return url('/public/certificates/color_belt_certificate_blank.jpg');
     }
 
@@ -65,13 +65,7 @@ class BestTestCertificateRenderer
 
     public static function fatherName(BestTestAthlete $row): string
     {
-        $name = strtoupper(trim((string) ($row->user->father_name ?? '')));
-        // Keep short so it does not overlap printed "of"
-        if (mb_strlen($name) > 18) {
-            $name = rtrim(mb_substr($name, 0, 17)) . '.';
-        }
-
-        return $name;
+        return strtoupper(trim((string) ($row->user->father_name ?? '')));
     }
 
     public static function districtName(BestTestAthlete $row, BestTestBatch $batch): string
@@ -154,41 +148,68 @@ class BestTestCertificateRenderer
 
         $w = imagesx($img);
         $h = imagesy($img);
-        $black = imagecolorallocate($img, 20, 20, 20);
-        $font = self::resolveFontPath();
-
+        $black = imagecolorallocate($img, 40, 40, 40);
+        $regular = self::resolveFontPath(false);
+        $bold = self::resolveFontPath(true);
         $data = self::payload($batch, $row);
-        $size = max(13, (int) round($w * 0.0165));
 
-        // Dotted lines on blank (1152h): 724,765,808,849,891,925 (skip title underline 665)
-        // imagettftext Y is baseline — keep a few px above the dots
-        $fields = [
-            ['text' => $data['no'],        'x' => 0.19, 'y' => 724 + 6],
-            ['text' => $data['date'],      'x' => 0.71, 'y' => 724 + 6],
-            ['text' => $data['name'],      'x' => 0.465, 'y' => 765 + 6],
-            ['text' => $data['father'],    'x' => 0.29, 'y' => 808 + 6],
-            ['text' => $data['district'],  'x' => 0.585, 'y' => 808 + 6],
-            ['text' => $data['exam_date'], 'x' => 0.53, 'y' => 849 + 6],
-            ['text' => $data['place'],     'x' => 0.74, 'y' => 849 + 6], // clear of "at"
-            ['text' => $data['belt'],      'x' => 0.40, 'y' => 891 + 6],
-            ['text' => $data['grade'],     'x' => 0.76, 'y' => 925 + 4],
-        ];
+        $size = max(13, (int) round($w * 0.0185));
+        $left = (int) round($w * 0.125);
+        $right = (int) round($w * 0.87);
+        $lineH = (int) round($h * 0.0305);
+        $y = (int) round($h * 0.608);
 
-        foreach ($fields as $field) {
-            if ($field['text'] === '') {
-                continue;
-            }
-            imagettftext(
-                $img,
-                $size,
-                0,
-                (int) round($w * $field['x']),
-                (int) $field['y'],
-                $black,
-                $font,
-                $field['text']
-            );
-        }
+        // Line 1: No. ....value....     Date: value
+        self::drawMixed($img, $left, $y, array_merge(
+            [['No. ', 'r']],
+            self::dottedParts($data['no'], 5, 10)
+        ), $size, $regular, $bold, $black);
+        $dateParts = [['Date: ', 'r'], [$data['date'], 'b']];
+        $dateW = self::measureMixed($dateParts, $size, $regular, $bold);
+        self::drawMixed($img, $right - $dateW, $y, $dateParts, $size, $regular, $bold, $black);
+
+        // Line 2: This is to certify that Mr./Ms. ....NAME
+        $y += $lineH;
+        self::drawMixed($img, $left, $y, array_merge(
+            [['This is to certify that Mr./Ms. ', 'r']],
+            self::dottedParts($data['name'], 6, 6)
+        ), $size, $regular, $bold, $black);
+
+        // Line 3: Son / Daughter ....FATHER.... of ....DISTRICT.... District
+        $y += $lineH;
+        self::drawMixed($img, $left, $y, array_merge(
+            [['Son / Daughter ', 'r']],
+            self::dottedParts($data['father'], 3, 4),
+            [[' of ', 'r']],
+            self::dottedParts($data['district'], 2, 3),
+            [[' District', 'r']]
+        ), $size, $regular, $bold, $black);
+
+        // Line 4: qualified ... Held on DATE.... at ....PLACE
+        $y += $lineH;
+        self::drawMixed($img, $left, $y, array_merge(
+            [['qualified in Color Belt Promotion Test Held on ', 'r']],
+            self::dottedParts($data['exam_date'], 0, 3),
+            [[' at ', 'r']],
+            self::dottedParts($data['place'], 1, 2)
+        ), $size, $regular, $bold, $black);
+
+        // Line 5: is permitted to wear ....BELT.... belt
+        $y += $lineH;
+        self::drawMixed($img, $left, $y, array_merge(
+            [['is permitted to wear ', 'r']],
+            self::dottedParts($data['belt'], 6, 6),
+            [[' belt', 'r']]
+        ), $size, $regular, $bold, $black);
+
+        // Line 6: He/She is not permitted...     Grade: VALUE
+        $y += $lineH;
+        self::drawMixed($img, $left, $y, [
+            ['He/She is not permitted to teach taekwondo', 'r'],
+        ], $size, $regular, $bold, $black);
+        $gradeParts = [['Grade: ', 'r'], [$data['grade'], 'b']];
+        $gradeW = self::measureMixed($gradeParts, $size, $regular, $bold);
+        self::drawMixed($img, $right - $gradeW, $y, $gradeParts, $size, $regular, $bold, $black);
 
         ob_start();
         imagejpeg($img, null, 92);
@@ -196,5 +217,54 @@ class BestTestCertificateRenderer
         imagedestroy($img);
 
         return $binary;
+    }
+
+    protected static function dottedParts(string $value, int $leftDots = 4, int $rightDots = 8): array
+    {
+        $value = trim($value);
+        $parts = [];
+        if ($leftDots > 0) {
+            $parts[] = [str_repeat('.', $leftDots), 'r'];
+        }
+        if ($value !== '') {
+            $parts[] = [$value, 'b'];
+        }
+        if ($rightDots > 0) {
+            $parts[] = [str_repeat('.', $rightDots), 'r'];
+        }
+
+        return $parts;
+    }
+
+    protected static function drawMixed($img, int $x, int $y, array $parts, int $size, string $regular, string $bold, $color): int
+    {
+        foreach ($parts as $part) {
+            $text = (string) $part[0];
+            if ($text === '') {
+                continue;
+            }
+            $font = (($part[1] ?? 'r') === 'b') ? $bold : $regular;
+            imagettftext($img, $size, 0, $x, $y, $color, $font, $text);
+            $box = imagettfbbox($size, 0, $font, $text);
+            $x += (int) abs($box[2] - $box[0]);
+        }
+
+        return $x;
+    }
+
+    protected static function measureMixed(array $parts, int $size, string $regular, string $bold): int
+    {
+        $w = 0;
+        foreach ($parts as $part) {
+            $text = (string) $part[0];
+            if ($text === '') {
+                continue;
+            }
+            $font = (($part[1] ?? 'r') === 'b') ? $bold : $regular;
+            $box = imagettfbbox($size, 0, $font, $text);
+            $w += (int) abs($box[2] - $box[0]);
+        }
+
+        return $w;
     }
 }
