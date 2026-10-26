@@ -65,7 +65,12 @@ class BestTestCertificateRenderer
 
     public static function fatherName(BestTestAthlete $row): string
     {
-        return strtoupper(trim((string) ($row->user->father_name ?? '')));
+        $name = strtoupper(trim((string) ($row->user->father_name ?? '')));
+        if (mb_strlen($name) > 18) {
+            $name = rtrim(mb_substr($name, 0, 17)) . '.';
+        }
+
+        return $name;
     }
 
     public static function districtName(BestTestAthlete $row, BestTestBatch $batch): string
@@ -148,68 +153,40 @@ class BestTestCertificateRenderer
 
         $w = imagesx($img);
         $h = imagesy($img);
-        $black = imagecolorallocate($img, 40, 40, 40);
-        $regular = self::resolveFontPath(false);
-        $bold = self::resolveFontPath(true);
+        $black = imagecolorallocate($img, 50, 50, 50);
+        $font = self::resolveFontPath(true);
         $data = self::payload($batch, $row);
+        $size = max(12, (int) round($w * 0.0165));
 
-        $size = max(13, (int) round($w * 0.0185));
-        $left = (int) round($w * 0.125);
-        $right = (int) round($w * 0.87);
-        $lineH = (int) round($h * 0.0305);
-        $y = (int) round($h * 0.608);
+        // Live blank already has printed labels + dotted lines.
+        // Only fill values on those lines (percent of blank size).
+        $fields = [
+            ['text' => $data['no'],        'x' => 0.168, 'y' => 0.576],
+            ['text' => $data['date'],      'x' => 0.735, 'y' => 0.576],
+            ['text' => $data['name'],      'x' => 0.432, 'y' => 0.609],
+            ['text' => $data['father'],    'x' => 0.288, 'y' => 0.641],
+            ['text' => $data['district'],  'x' => 0.545, 'y' => 0.641],
+            ['text' => $data['exam_date'], 'x' => 0.602, 'y' => 0.672],
+            ['text' => $data['place'],     'x' => 0.760, 'y' => 0.672],
+            ['text' => $data['belt'],      'x' => 0.338, 'y' => 0.703],
+            ['text' => $data['grade'],     'x' => 0.740, 'y' => 0.735],
+        ];
 
-        // Line 1: No. ....value....     Date: value
-        self::drawMixed($img, $left, $y, array_merge(
-            [['No. ', 'r']],
-            self::dottedParts($data['no'], 5, 10)
-        ), $size, $regular, $bold, $black);
-        $dateParts = [['Date: ', 'r'], [$data['date'], 'b']];
-        $dateW = self::measureMixed($dateParts, $size, $regular, $bold);
-        self::drawMixed($img, $right - $dateW, $y, $dateParts, $size, $regular, $bold, $black);
-
-        // Line 2: This is to certify that Mr./Ms. ....NAME
-        $y += $lineH;
-        self::drawMixed($img, $left, $y, array_merge(
-            [['This is to certify that Mr./Ms. ', 'r']],
-            self::dottedParts($data['name'], 6, 6)
-        ), $size, $regular, $bold, $black);
-
-        // Line 3: Son / Daughter ....FATHER.... of ....DISTRICT.... District
-        $y += $lineH;
-        self::drawMixed($img, $left, $y, array_merge(
-            [['Son / Daughter ', 'r']],
-            self::dottedParts($data['father'], 3, 4),
-            [[' of ', 'r']],
-            self::dottedParts($data['district'], 2, 3),
-            [[' District', 'r']]
-        ), $size, $regular, $bold, $black);
-
-        // Line 4: qualified ... Held on DATE.... at ....PLACE
-        $y += $lineH;
-        self::drawMixed($img, $left, $y, array_merge(
-            [['qualified in Color Belt Promotion Test Held on ', 'r']],
-            self::dottedParts($data['exam_date'], 0, 3),
-            [[' at ', 'r']],
-            self::dottedParts($data['place'], 1, 2)
-        ), $size, $regular, $bold, $black);
-
-        // Line 5: is permitted to wear ....BELT.... belt
-        $y += $lineH;
-        self::drawMixed($img, $left, $y, array_merge(
-            [['is permitted to wear ', 'r']],
-            self::dottedParts($data['belt'], 6, 6),
-            [[' belt', 'r']]
-        ), $size, $regular, $bold, $black);
-
-        // Line 6: He/She is not permitted...     Grade: VALUE
-        $y += $lineH;
-        self::drawMixed($img, $left, $y, [
-            ['He/She is not permitted to teach taekwondo', 'r'],
-        ], $size, $regular, $bold, $black);
-        $gradeParts = [['Grade: ', 'r'], [$data['grade'], 'b']];
-        $gradeW = self::measureMixed($gradeParts, $size, $regular, $bold);
-        self::drawMixed($img, $right - $gradeW, $y, $gradeParts, $size, $regular, $bold, $black);
+        foreach ($fields as $field) {
+            if ($field['text'] === '') {
+                continue;
+            }
+            imagettftext(
+                $img,
+                $size,
+                0,
+                (int) round($w * $field['x']),
+                (int) round($h * $field['y']) + 6,
+                $black,
+                $font,
+                $field['text']
+            );
+        }
 
         ob_start();
         imagejpeg($img, null, 92);
@@ -217,54 +194,5 @@ class BestTestCertificateRenderer
         imagedestroy($img);
 
         return $binary;
-    }
-
-    protected static function dottedParts(string $value, int $leftDots = 4, int $rightDots = 8): array
-    {
-        $value = trim($value);
-        $parts = [];
-        if ($leftDots > 0) {
-            $parts[] = [str_repeat('.', $leftDots), 'r'];
-        }
-        if ($value !== '') {
-            $parts[] = [$value, 'b'];
-        }
-        if ($rightDots > 0) {
-            $parts[] = [str_repeat('.', $rightDots), 'r'];
-        }
-
-        return $parts;
-    }
-
-    protected static function drawMixed($img, int $x, int $y, array $parts, int $size, string $regular, string $bold, $color): int
-    {
-        foreach ($parts as $part) {
-            $text = (string) $part[0];
-            if ($text === '') {
-                continue;
-            }
-            $font = (($part[1] ?? 'r') === 'b') ? $bold : $regular;
-            imagettftext($img, $size, 0, $x, $y, $color, $font, $text);
-            $box = imagettfbbox($size, 0, $font, $text);
-            $x += (int) abs($box[2] - $box[0]);
-        }
-
-        return $x;
-    }
-
-    protected static function measureMixed(array $parts, int $size, string $regular, string $bold): int
-    {
-        $w = 0;
-        foreach ($parts as $part) {
-            $text = (string) $part[0];
-            if ($text === '') {
-                continue;
-            }
-            $font = (($part[1] ?? 'r') === 'b') ? $bold : $regular;
-            $box = imagettfbbox($size, 0, $font, $text);
-            $w += (int) abs($box[2] - $box[0]);
-        }
-
-        return $w;
     }
 }
