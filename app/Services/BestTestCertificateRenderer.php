@@ -110,12 +110,47 @@ class BestTestCertificateRenderer
 
     public static function place(BestTestBatch $batch): string
     {
-        $place = strtoupper(trim((string) ($batch->place ?? '')));
-        if (mb_strlen($place) > 14) {
-            $place = rtrim(mb_substr($place, 0, 13)) . '.';
+        return strtoupper(trim((string) ($batch->place ?? '')));
+    }
+
+    /**
+     * Split a long venue so "at" line + next dotted line show the full name.
+     *
+     * @return array{0:string,1:string}
+     */
+    public static function placeLines(BestTestBatch $batch): array
+    {
+        $place = self::place($batch);
+        if ($place === '') {
+            return ['', ''];
         }
 
-        return $place;
+        try {
+            $font = self::resolveFontPath(true);
+            $w = 724;
+            $blank = self::blankPath();
+            if (is_file($blank)) {
+                $info = @getimagesize($blank);
+                if (!empty($info[0])) {
+                    $w = (int) $info[0];
+                }
+            }
+            $size = max(11, (int) round($w * 0.0154));
+            $maxW = (int) round($w * 0.148);
+
+            return self::wrapToWidth($place, $size, $font, $maxW);
+        } catch (\Throwable $e) {
+            if (mb_strlen($place) <= 14) {
+                return [$place, ''];
+            }
+            $words = preg_split('/\s+/', $place);
+            $line1 = array_shift($words);
+            while ($words && mb_strlen($line1 . ' ' . $words[0]) <= 14) {
+                $line1 .= ' ' . array_shift($words);
+            }
+
+            return [$line1, trim(implode(' ', $words))];
+        }
     }
 
     public static function beltColor(BestTestAthlete $row): string
@@ -142,6 +177,8 @@ class BestTestCertificateRenderer
 
     public static function payload(BestTestBatch $batch, BestTestAthlete $row): array
     {
+        $placeLines = self::placeLines($batch);
+
         return [
             'no' => self::certificateNo($batch, $row),
             'date' => self::issueDate($batch),
@@ -150,6 +187,8 @@ class BestTestCertificateRenderer
             'district' => self::districtName($row, $batch),
             'exam_date' => self::examDate($batch),
             'place' => self::place($batch),
+            'place1' => $placeLines[0],
+            'place2' => $placeLines[1],
             'belt' => self::beltColor($row),
             'grade' => self::grade($row),
             'blank_url' => self::blankUrl(),
@@ -209,9 +248,17 @@ class BestTestCertificateRenderer
         self::drawText($img, (int) round($w * 0.128), $y4, 'qualified in Color Belt Promotion Test Held on', $size, $regular, $ink);
         self::dottedField($img, $w, 0.532, 0.691, $y4, $data['exam_date'], $size, $regular, $bold, $ink);
         self::drawText($img, (int) round($w * 0.695), $y4, 'at', $size, $regular, $ink);
-        self::dottedField($img, $w, 0.708, 0.858, $y4, $data['place'], $size, $regular, $bold, $ink);
+        $placeSize = $size;
+        $placeMax1 = (int) round($w * 0.148);
+        $placeMax2 = (int) round($w * 0.225);
+        $placeLines = self::wrapToWidth($data['place'], $placeSize, $bold, $placeMax1);
+        while ($placeSize > 9 && $placeLines[1] !== '' && self::textWidth($placeLines[1], $placeSize, $bold) > $placeMax2) {
+            $placeSize--;
+            $placeLines = self::wrapToWidth($data['place'], $placeSize, $bold, $placeMax1);
+        }
+        self::dottedField($img, $w, 0.708, 0.858, $y4, $placeLines[0], $placeSize, $regular, $bold, $ink);
 
-        self::dottedField($img, $w, 0.142, 0.369, $y5, '', $size, $regular, $bold, $ink);
+        self::dottedField($img, $w, 0.142, 0.369, $y5, $placeLines[1], $placeSize, $regular, $bold, $ink);
         self::drawText($img, (int) round($w * 0.372), $y5, 'and is permitted to wear', $size, $regular, $ink);
         self::dottedField($img, $w, 0.593, 0.822, $y5, $data['belt'], $size, $regular, $bold, $ink);
         self::drawText($img, (int) round($w * 0.828), $y5, 'belt.', $size, $regular, $ink);
@@ -270,6 +317,43 @@ class BestTestCertificateRenderer
         } else {
             self::drawDotsTo($img, $x0, $x1, $y, $size, $regular, $color);
         }
+    }
+
+    /**
+     * @return array{0:string,1:string}
+     */
+    protected static function wrapToWidth(string $text, int $size, string $font, int $maxW): array
+    {
+        $text = trim($text);
+        if ($text === '' || self::textWidth($text, $size, $font) <= $maxW) {
+            return [$text, ''];
+        }
+
+        $words = preg_split('/\s+/', $text);
+        $line1 = '';
+        $used = 0;
+        foreach ($words as $i => $word) {
+            $try = $line1 === '' ? $word : ($line1 . ' ' . $word);
+            if (self::textWidth($try, $size, $font) <= $maxW) {
+                $line1 = $try;
+                $used = $i + 1;
+            } else {
+                break;
+            }
+        }
+
+        if ($line1 === '') {
+            $word = $words[0];
+            $line1 = $word;
+            while ($line1 !== '' && self::textWidth($line1, $size, $font) > $maxW) {
+                $line1 = mb_substr($line1, 0, mb_strlen($line1) - 1);
+            }
+            $rest = trim(mb_substr($word, mb_strlen($line1)) . ' ' . implode(' ', array_slice($words, 1)));
+
+            return [$line1, $rest];
+        }
+
+        return [$line1, trim(implode(' ', array_slice($words, $used)))];
     }
 
     protected static function drawDotsTo($img, int $x, int $end, int $y, int $size, string $font, $color): void

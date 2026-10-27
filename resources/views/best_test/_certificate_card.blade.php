@@ -21,9 +21,9 @@
     <span class="btc-t" style="left:12.8%;top:70.6%">qualified in Color Belt Promotion Test Held on</span>
     <span class="btc-t btc-b btc-d" style="left:53.2%;width:15.9%;top:70.6%">{{ $payload['exam_date'] }}</span>
     <span class="btc-t" style="left:69.5%;top:70.6%">at</span>
-    <span class="btc-t btc-b btc-d" style="left:70.8%;width:15.0%;top:70.6%">{{ $payload['place'] }}</span>
+    <span class="btc-t btc-b btc-d" style="left:70.8%;width:15.0%;top:70.6%">{{ $payload['place1'] }}</span>
 
-    <span class="btc-t btc-d" style="left:14.2%;width:22.7%;top:74.1%">&nbsp;</span>
+    <span class="btc-t btc-b btc-d btc-place2" style="left:14.2%;width:22.7%;top:74.1%">{{ $payload['place2'] }}</span>
     <span class="btc-t" style="left:37.2%;top:74.1%">and is permitted to wear</span>
     <span class="btc-t btc-b btc-d" style="left:59.3%;width:22.9%;top:74.1%">{{ $payload['belt'] }}</span>
     <span class="btc-t" style="left:82.8%;top:74.1%">belt.</span>

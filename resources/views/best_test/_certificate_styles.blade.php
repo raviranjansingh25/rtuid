@@ -38,6 +38,9 @@
         padding-bottom: 0.12cqi;
         box-sizing: border-box;
     }
+    .btc-place2 {
+        text-overflow: clip;
+    }
     .btc-actions { margin: 10px 0 18px; line-height: normal; }
     @media print {
         .no-print { display: none !important; }
