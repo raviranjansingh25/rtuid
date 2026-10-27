@@ -68,6 +68,12 @@ class BestTestCertificateRenderer
 
     public static function certificateNo(BestTestBatch $batch, BestTestAthlete $row): string
     {
+        $user = $row->user;
+        $code = trim((string) (($user->code_id ?? null) ?: ($user->code ?? '')));
+        if ($code !== '') {
+            return strtoupper($code);
+        }
+
         return (string) ($row->id ?: ($batch->id . '00'));
     }
 
@@ -226,6 +232,7 @@ class BestTestCertificateRenderer
         imagedestroy($src);
 
         $ink = imagecolorallocate($img, 51, 51, 51);
+        $blue = imagecolorallocate($img, 0, 71, 171);
         $regular = self::resolveFontPath(false);
         $bold = self::resolveFontPath(true);
         $data = self::payload($batch, $row);
@@ -244,15 +251,15 @@ class BestTestCertificateRenderer
 
         $x = $left;
         $x = self::drawText($img, $x, $y1, 'No.', $size, $regular, $ink) + $gap;
-        self::drawText($img, $x, $y1, $data['no'], $size, $bold, $ink);
+        self::drawText($img, $x, $y1, $data['no'], $size, $bold, $blue);
         $dateSlot = (int) round($w * 0.36);
         $x = $right - $dateSlot;
         $x = self::drawText($img, $x, $y1, 'Date:', $size, $regular, $ink) + $gap;
-        self::fillDotted($img, $x, $right, $y1, $data['date'], $size, $minSize, $regular, $bold, $ink);
+        self::fillDotted($img, $x, $right, $y1, $data['date'], $size, $minSize, $regular, $bold, $blue);
 
         $x = $left;
         $x = self::drawText($img, $x, $y2, 'This is to certify that Mr./Ms.', $size, $regular, $ink) + $gap;
-        self::fillDotted($img, $x, $right, $y2, $data['name'], $size, $minSize, $regular, $bold, $ink);
+        self::fillDotted($img, $x, $right, $y2, $data['name'], $size, $minSize, $regular, $bold, $blue);
 
         $x = $left;
         $x = self::drawText($img, $x, $y3, 'Son / Daughter', $size, $regular, $ink) + $gap;
@@ -260,11 +267,11 @@ class BestTestCertificateRenderer
         $hasW = self::textWidth('District, has', $size, $regular);
         $remain = max(40, $right - $x - $ofW - $hasW - ($gap * 3));
         $fatherEnd = $x + (int) round($remain * 0.55);
-        self::fillDotted($img, $x, $fatherEnd, $y3, $data['father'], $size, $minSize, $regular, $bold, $ink);
+        self::fillDotted($img, $x, $fatherEnd, $y3, $data['father'], $size, $minSize, $regular, $bold, $blue);
         $x = $fatherEnd + $gap;
         $x = self::drawText($img, $x, $y3, 'of', $size, $regular, $ink) + $gap;
         $districtEnd = $right - $hasW - $gap;
-        self::fillDotted($img, $x, $districtEnd, $y3, $data['district'], $size, $minSize, $regular, $bold, $ink);
+        self::fillDotted($img, $x, $districtEnd, $y3, $data['district'], $size, $minSize, $regular, $bold, $blue);
         self::drawText($img, $districtEnd + $gap, $y3, 'District, has', $size, $regular, $ink);
 
         $x = $left;
@@ -274,11 +281,11 @@ class BestTestCertificateRenderer
         if ($dateEnd + $gap + $atW + $gap + 40 > $right) {
             $dateEnd = $right - $atW - $gap * 2 - 40;
         }
-        self::fillDotted($img, $x, $dateEnd, $y4, $data['exam_date'], $size, $minSize, $regular, $bold, $ink);
+        self::fillDotted($img, $x, $dateEnd, $y4, $data['exam_date'], $size, $minSize, $regular, $bold, $blue);
         $x = $dateEnd + $gap;
         $x = self::drawText($img, $x, $y4, 'at', $size, $regular, $ink) + $gap;
         $placeLines = self::wrapToWidth($data['place'], $size, $bold, max(20, $right - $x));
-        self::fillDotted($img, $x, $right, $y4, $placeLines[0], $size, $minSize, $regular, $bold, $ink);
+        self::fillDotted($img, $x, $right, $y4, $placeLines[0], $size, $minSize, $regular, $bold, $blue);
 
         $wearW = self::textWidth('and is permitted to wear', $size, $regular);
         $beltDot = self::textWidth('belt.', $size, $regular);
@@ -288,19 +295,19 @@ class BestTestCertificateRenderer
             $maxPlace2 = $right - $left - $wearW - $beltMin - $beltDot - ($gap * 4);
             $need = self::textWidth($placeLines[1], $size, $bold) + $gap * 2;
             $place2End = $x + min(max($need, $gap * 4), max(40, $maxPlace2));
-            self::fillDotted($img, $x, $place2End, $y5, $placeLines[1], $size, $minSize, $regular, $bold, $ink);
+            self::fillDotted($img, $x, $place2End, $y5, $placeLines[1], $size, $minSize, $regular, $bold, $blue);
             $x = $place2End + $gap;
         }
         $x = self::drawText($img, $x, $y5, 'and is permitted to wear', $size, $regular, $ink) + $gap;
         $beltEnd = $right - $beltDot - $gap;
-        self::fillDotted($img, $x, $beltEnd, $y5, $data['belt'], $size, $minSize, $regular, $bold, $ink);
+        self::fillDotted($img, $x, $beltEnd, $y5, $data['belt'], $size, $minSize, $regular, $bold, $blue);
         self::drawText($img, $beltEnd + $gap, $y5, 'belt.', $size, $regular, $ink);
 
         self::drawText($img, $left, $y6, 'He/She is not permitted to teach taekwondo', $size, $regular, $ink);
         $gradeSlot = (int) round($w * 0.26);
         $x = $right - $gradeSlot;
         $x = self::drawText($img, $x, $y6, 'Grade:', $size, $regular, $ink) + $gap;
-        self::fillDotted($img, $x, $right, $y6, $data['grade'], $size, $minSize, $regular, $bold, $ink);
+        self::fillDotted($img, $x, $right, $y6, $data['grade'], $size, $minSize, $regular, $bold, $blue);
 
         ob_start();
         imagejpeg($img, null, 96);

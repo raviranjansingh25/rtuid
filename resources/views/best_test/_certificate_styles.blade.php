@@ -49,6 +49,7 @@
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 0.15px;
+        color: #0047ab;
     }
     .btc-val {
         flex: 1 1 0;
@@ -57,7 +58,8 @@
         text-transform: uppercase;
         letter-spacing: 0.15px;
         text-align: center;
-        border-bottom: 0.14cqi dotted #444;
+        color: #0047ab;
+        border-bottom: 0.14cqi dotted #0047ab;
         padding: 0 0.35cqi 0.12cqi;
         box-sizing: border-box;
         overflow: hidden;
