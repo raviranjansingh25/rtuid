@@ -10,6 +10,11 @@ class BestTestCertificateRenderer
 {
     public static function blankPath(): string
     {
+        $png4k = public_path('certificates/color_belt_certificate_4k.png');
+        if (is_file($png4k)) {
+            return $png4k;
+        }
+
         $jpg = public_path('certificates/color_belt_certificate_blank.jpg');
         if (is_file($jpg)) {
             return $jpg;
@@ -54,11 +59,11 @@ class BestTestCertificateRenderer
 
     public static function blankUrl(): string
     {
-        if (is_file(public_path('certificates/color_belt_certificate_blank.jpg'))) {
-            return url('/public/certificates/color_belt_certificate_blank.jpg');
-        }
+        $path = self::blankPath();
+        $v = is_file($path) ? filemtime($path) : time();
+        $name = basename($path);
 
-        return url('/public/certificates/color_belt_certificate_blank.png');
+        return url('/public/certificates/' . $name) . '?v=' . $v;
     }
 
     public static function certificateNo(BestTestBatch $batch, BestTestAthlete $row): string
@@ -74,28 +79,19 @@ class BestTestCertificateRenderer
 
     public static function fatherName(BestTestAthlete $row): string
     {
-        $name = strtoupper(trim((string) ($row->user->father_name ?? '')));
-        if (mb_strlen($name) > 20) {
-            $name = rtrim(mb_substr($name, 0, 19)) . '.';
-        }
-
-        return $name;
+        return strtoupper(trim((string) ($row->user->father_name ?? '')));
     }
 
     public static function districtName(BestTestAthlete $row, BestTestBatch $batch): string
     {
         $districtId = $row->user->district ?? $batch->district;
         if (!empty($row->user->district_name) && !is_numeric($row->user->district_name)) {
-            $name = strtoupper($row->user->district_name);
-        } else {
-            $tag = Tags::find($districtId);
-            $name = strtoupper($tag->title ?? (string) $districtId);
-        }
-        if (mb_strlen($name) > 16) {
-            $name = rtrim(mb_substr($name, 0, 15)) . '.';
+            return strtoupper($row->user->district_name);
         }
 
-        return $name;
+        $tag = Tags::find($districtId);
+
+        return strtoupper($tag->title ?? (string) $districtId);
     }
 
     public static function issueDate(BestTestBatch $batch): string
@@ -126,7 +122,8 @@ class BestTestCertificateRenderer
         }
 
         try {
-            $font = self::resolveFontPath(true);
+            $bold = self::resolveFontPath(true);
+            $regular = self::resolveFontPath(false);
             $w = 724;
             $blank = self::blankPath();
             if (is_file($blank)) {
@@ -136,9 +133,19 @@ class BestTestCertificateRenderer
                 }
             }
             $size = max(11, (int) round($w * 0.0154));
-            $maxW = (int) round($w * 0.148);
+            $gap = max(8, (int) round($w * 0.006));
+            $left = (int) round($w * 0.128);
+            $right = (int) round($w * 0.858);
+            $x = $left
+                + self::textWidth('qualified in Color Belt Promotion Test Held on', $size, $regular)
+                + $gap
+                + max((int) round($w * 0.145), self::textWidth(self::examDate($batch), $size, $bold) + $gap * 2)
+                + $gap
+                + self::textWidth('at', $size, $regular)
+                + $gap;
+            $maxW = max(20, $right - $x);
 
-            return self::wrapToWidth($place, $size, $font, $maxW);
+            return self::wrapToWidth($place, $size, $bold, $maxW);
         } catch (\Throwable $e) {
             if (mb_strlen($place) <= 14) {
                 return [$place, ''];
@@ -200,6 +207,7 @@ class BestTestCertificateRenderer
      */
     public static function renderJpg(BestTestBatch $batch, BestTestAthlete $row): string
     {
+        @ini_set('memory_limit', '512M');
         $blank = self::blankPath();
         if (!file_exists($blank)) {
             throw new \RuntimeException('Certificate blank template missing.');
@@ -222,8 +230,11 @@ class BestTestCertificateRenderer
         $bold = self::resolveFontPath(true);
         $data = self::payload($batch, $row);
         $size = max(11, (int) round($w * 0.0154));
+        $minSize = max(9, (int) round($w * 0.011));
+        $gap = max(8, (int) round($w * 0.006));
+        $left = (int) round($w * 0.128);
+        $right = (int) round($w * 0.858);
 
-        // Same places and dotted lengths as the original printed form.
         $y1 = (int) round($h * 0.603);
         $y2 = (int) round($h * 0.637);
         $y3 = (int) round($h * 0.672);
@@ -231,44 +242,65 @@ class BestTestCertificateRenderer
         $y5 = (int) round($h * 0.741);
         $y6 = (int) round($h * 0.775);
 
-        self::drawText($img, (int) round($w * 0.128), $y1, 'No.', $size, $regular, $ink);
-        self::drawText($img, (int) round($w * 0.195), $y1, $data['no'], $size, $bold, $ink);
-        self::drawText($img, (int) round($w * 0.648), $y1, 'Date:', $size, $regular, $ink);
-        self::dottedField($img, $w, 0.708, 0.858, $y1, $data['date'], $size, $regular, $bold, $ink);
+        $x = $left;
+        $x = self::drawText($img, $x, $y1, 'No.', $size, $regular, $ink) + $gap;
+        self::drawText($img, $x, $y1, $data['no'], $size, $bold, $ink);
+        $dateSlot = (int) round($w * 0.34);
+        $x = $right - $dateSlot;
+        $x = self::drawText($img, $x, $y1, 'Date:', $size, $regular, $ink) + $gap;
+        self::fillDotted($img, $x, $right, $y1, $data['date'], $size, $minSize, $regular, $bold, $ink);
 
-        self::drawText($img, (int) round($w * 0.128), $y2, 'This is to certify that Mr./Ms.', $size, $regular, $ink);
-        self::dottedField($img, $w, 0.372, 0.858, $y2, $data['name'], $size, $regular, $bold, $ink);
+        $x = $left;
+        $x = self::drawText($img, $x, $y2, 'This is to certify that Mr./Ms.', $size, $regular, $ink) + $gap;
+        self::fillDotted($img, $x, $right, $y2, $data['name'], $size, $minSize, $regular, $bold, $ink);
 
-        self::drawText($img, (int) round($w * 0.128), $y3, 'Son / Daughter', $size, $regular, $ink);
-        self::dottedField($img, $w, 0.270, 0.541, $y3, $data['father'], $size, $regular, $bold, $ink);
-        self::drawText($img, (int) round($w * 0.545), $y3, 'of', $size, $regular, $ink);
-        self::dottedField($img, $w, 0.565, 0.762, $y3, $data['district'], $size, $regular, $bold, $ink);
-        self::drawText($img, (int) round($w * 0.768), $y3, 'District, has', $size, $regular, $ink);
+        $x = $left;
+        $x = self::drawText($img, $x, $y3, 'Son / Daughter', $size, $regular, $ink) + $gap;
+        $ofW = self::textWidth('of', $size, $regular);
+        $hasW = self::textWidth('District, has', $size, $regular);
+        $remain = max(40, $right - $x - $ofW - $hasW - ($gap * 3));
+        $fatherEnd = $x + (int) round($remain * 0.55);
+        self::fillDotted($img, $x, $fatherEnd, $y3, $data['father'], $size, $minSize, $regular, $bold, $ink);
+        $x = $fatherEnd + $gap;
+        $x = self::drawText($img, $x, $y3, 'of', $size, $regular, $ink) + $gap;
+        $districtEnd = $right - $hasW - $gap;
+        self::fillDotted($img, $x, $districtEnd, $y3, $data['district'], $size, $minSize, $regular, $bold, $ink);
+        self::drawText($img, $districtEnd + $gap, $y3, 'District, has', $size, $regular, $ink);
 
-        self::drawText($img, (int) round($w * 0.128), $y4, 'qualified in Color Belt Promotion Test Held on', $size, $regular, $ink);
-        self::dottedField($img, $w, 0.532, 0.691, $y4, $data['exam_date'], $size, $regular, $bold, $ink);
-        self::drawText($img, (int) round($w * 0.695), $y4, 'at', $size, $regular, $ink);
-        $placeSize = $size;
-        $placeMax1 = (int) round($w * 0.148);
-        $placeMax2 = (int) round($w * 0.225);
-        $placeLines = self::wrapToWidth($data['place'], $placeSize, $bold, $placeMax1);
-        while ($placeSize > 9 && $placeLines[1] !== '' && self::textWidth($placeLines[1], $placeSize, $bold) > $placeMax2) {
-            $placeSize--;
-            $placeLines = self::wrapToWidth($data['place'], $placeSize, $bold, $placeMax1);
+        $x = $left;
+        $x = self::drawText($img, $x, $y4, 'qualified in Color Belt Promotion Test Held on', $size, $regular, $ink) + $gap;
+        $dateEnd = $x + max((int) round($w * 0.145), self::textWidth($data['exam_date'], $size, $bold) + $gap * 2);
+        $atW = self::textWidth('at', $size, $regular);
+        if ($dateEnd + $gap + $atW + $gap + 40 > $right) {
+            $dateEnd = $right - $atW - $gap * 2 - 40;
         }
-        self::dottedField($img, $w, 0.708, 0.858, $y4, $placeLines[0], $placeSize, $regular, $bold, $ink);
+        self::fillDotted($img, $x, $dateEnd, $y4, $data['exam_date'], $size, $minSize, $regular, $bold, $ink);
+        $x = $dateEnd + $gap;
+        $x = self::drawText($img, $x, $y4, 'at', $size, $regular, $ink) + $gap;
+        $placeLines = self::wrapToWidth($data['place'], $size, $bold, max(20, $right - $x));
+        self::fillDotted($img, $x, $right, $y4, $placeLines[0], $size, $minSize, $regular, $bold, $ink);
 
-        self::dottedField($img, $w, 0.142, 0.369, $y5, $placeLines[1], $placeSize, $regular, $bold, $ink);
-        self::drawText($img, (int) round($w * 0.372), $y5, 'and is permitted to wear', $size, $regular, $ink);
-        self::dottedField($img, $w, 0.593, 0.822, $y5, $data['belt'], $size, $regular, $bold, $ink);
-        self::drawText($img, (int) round($w * 0.828), $y5, 'belt.', $size, $regular, $ink);
+        $wearW = self::textWidth('and is permitted to wear', $size, $regular);
+        $beltDot = self::textWidth('belt.', $size, $regular);
+        $x = $left;
+        if ($placeLines[1] !== '') {
+            $place2End = $x + (int) round(($right - $left - $wearW - $beltDot - $gap * 3) * 0.42);
+            self::fillDotted($img, $x, $place2End, $y5, $placeLines[1], $size, $minSize, $regular, $bold, $ink);
+            $x = $place2End + $gap;
+        }
+        $x = self::drawText($img, $x, $y5, 'and is permitted to wear', $size, $regular, $ink) + $gap;
+        $beltEnd = $right - $beltDot - $gap;
+        self::fillDotted($img, $x, $beltEnd, $y5, $data['belt'], $size, $minSize, $regular, $bold, $ink);
+        self::drawText($img, $beltEnd + $gap, $y5, 'belt.', $size, $regular, $ink);
 
-        self::drawText($img, (int) round($w * 0.128), $y6, 'He/She is not permitted to teach taekwondo', $size, $regular, $ink);
-        self::drawText($img, (int) round($w * 0.725), $y6, 'Grade:', $size, $regular, $ink);
-        self::dottedField($img, $w, 0.779, 0.858, $y6, $data['grade'], $size, $regular, $bold, $ink);
+        self::drawText($img, $left, $y6, 'He/She is not permitted to teach taekwondo', $size, $regular, $ink);
+        $gradeSlot = (int) round($w * 0.24);
+        $x = $right - $gradeSlot;
+        $x = self::drawText($img, $x, $y6, 'Grade:', $size, $regular, $ink) + $gap;
+        self::fillDotted($img, $x, $right, $y6, $data['grade'], $size, $minSize, $regular, $bold, $ink);
 
         ob_start();
-        imagepng($img, null, 6);
+        imagejpeg($img, null, 96);
         $binary = ob_get_clean();
         imagedestroy($img);
 
@@ -296,27 +328,28 @@ class BestTestCertificateRenderer
     }
 
     /**
-     * Dotted field of a fixed length (same as the original printed form).
+     * Dotted field from $x to $end. Short or long text sits on the full span.
      */
-    protected static function dottedField($img, int $w, float $x0pct, float $x1pct, int $y, string $value, int $size, string $regular, string $bold, $color): void
+    protected static function fillDotted($img, int $x, int $end, int $y, string $value, int $size, int $minSize, string $regular, string $bold, $color): void
     {
-        $x0 = (int) round($w * $x0pct);
-        $x1 = (int) round($w * $x1pct);
+        if ($end <= $x + 2) {
+            return;
+        }
         $value = trim($value);
-        $valW = ($value === '') ? 0 : self::textWidth($value, $size, $bold);
-        $avail = max(0, $x1 - $x0);
-        if ($valW > $avail) {
-            $valW = $avail;
+        $s = $size;
+        $avail = $end - $x;
+        while ($s > $minSize && $value !== '' && (self::textWidth($value, $s, $bold) + 4) > $avail) {
+            $s--;
         }
-        $remain = max(0, $avail - $valW);
         if ($value !== '') {
-            $split = $x0 + (int) floor($remain * 0.18);
-            self::drawDotsTo($img, $x0, $split, $y, $size, $regular, $color);
-            self::drawText($img, $split, $y, $value, $size, $bold, $color);
-            self::drawDotsTo($img, $split + $valW, $x1, $y, $size, $regular, $color);
-        } else {
-            self::drawDotsTo($img, $x0, $x1, $y, $size, $regular, $color);
+            $vw = self::textWidth($value, $s, $bold);
+            $tx = $x + (int) floor(max(0, $avail - $vw) * 0.22);
+            if ($tx + $vw > $end) {
+                $tx = max($x, $end - $vw);
+            }
+            self::drawText($img, $tx, $y, $value, $s, $bold, $color);
         }
+        self::drawDotUnderline($img, $x, $end, $y, $s, $color);
     }
 
     /**
@@ -356,18 +389,16 @@ class BestTestCertificateRenderer
         return [$line1, trim(implode(' ', array_slice($words, $used)))];
     }
 
-    protected static function drawDotsTo($img, int $x, int $end, int $y, int $size, string $font, $color): void
+    protected static function drawDotUnderline($img, int $x, int $end, int $baseline, int $size, $color): void
     {
         if ($end - $x < 2) {
             return;
         }
-        $dotW = max(1, self::textWidth('.', $size, $font));
-        $n = (int) floor(($end - $x) / $dotW);
-        while ($n > 0 && ($x + self::textWidth(str_repeat('.', $n), $size, $font)) > $end) {
-            $n--;
-        }
-        if ($n > 0) {
-            self::drawText($img, $x, $y, str_repeat('.', $n), $size, $font, $color);
+        $uy = $baseline + (int) max(2, round($size * 0.16));
+        $d = max(2, (int) round($size * 0.11));
+        $step = max($d + 2, (int) round($size * 0.30));
+        for ($i = $x; $i + $d <= $end; $i += $step) {
+            imagefilledellipse($img, $i + (int) floor($d / 2), $uy, $d, $d, $color);
         }
     }
 }

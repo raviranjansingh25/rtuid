@@ -14,8 +14,14 @@
         height: auto;
         display: block;
     }
-    .btc-t {
+    .btc-line {
         position: absolute;
+        left: 12.8%;
+        width: 73%;
+        display: flex;
+        flex-wrap: nowrap;
+        align-items: baseline;
+        column-gap: 0.7cqi;
         transform: translateY(-88%);
         font-family: Arial, Helvetica, sans-serif;
         font-size: 1.54cqi;
@@ -25,21 +31,44 @@
         white-space: nowrap;
         pointer-events: none;
     }
+    .btc-grow { flex: 1 1 auto; min-width: 0; }
+    .btc-pair {
+        display: inline-flex;
+        align-items: baseline;
+        column-gap: 0.55cqi;
+        flex: 0 0 auto;
+    }
+    .btc-date {
+        flex: 0 0 34%;
+    }
+    .btc-grade {
+        flex: 0 0 24%;
+    }
+    .btc-slot {
+        flex: 0 1 15cqi;
+        min-width: 12cqi;
+    }
     .btc-b {
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 0.15px;
     }
-    .btc-d {
-        overflow: hidden;
-        text-overflow: ellipsis;
+    .btc-val {
+        flex: 1 1 0;
+        min-width: 0;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.15px;
         text-align: center;
         border-bottom: 0.14cqi dotted #444;
-        padding-bottom: 0.12cqi;
+        padding: 0 0.35cqi 0.12cqi;
         box-sizing: border-box;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
-    .btc-place2 {
-        text-overflow: clip;
+    .btc-date .btc-val,
+    .btc-grade .btc-val {
+        flex: 1 1 auto;
     }
     .btc-actions { margin: 10px 0 18px; line-height: normal; }
     @media print {

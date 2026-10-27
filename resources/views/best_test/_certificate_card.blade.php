@@ -4,31 +4,53 @@
 <div class="btc-sheet" id="cert-{{ $row->id }}">
     <img src="{{ $payload['blank_url'] }}" alt="Color Belt Certificate" class="btc-bg">
 
-    <span class="btc-t" style="left:12.8%;top:60.3%">No.</span>
-    <span class="btc-t btc-b" style="left:19.5%;top:60.3%">{{ $payload['no'] }}</span>
-    <span class="btc-t" style="left:64.8%;top:60.3%">Date:</span>
-    <span class="btc-t btc-b btc-d" style="left:70.8%;width:15.0%;top:60.3%">{{ $payload['date'] }}</span>
+    <div class="btc-line" style="top:60.3%">
+        <span class="btc-pair">
+            <span>No.</span>
+            <span class="btc-b">{{ $payload['no'] }}</span>
+        </span>
+        <span class="btc-grow"></span>
+        <span class="btc-pair btc-date">
+            <span>Date:</span>
+            <span class="btc-val">{{ $payload['date'] }}</span>
+        </span>
+    </div>
 
-    <span class="btc-t" style="left:12.8%;top:63.7%">This is to certify that Mr./Ms.</span>
-    <span class="btc-t btc-b btc-d" style="left:37.2%;width:48.6%;top:63.7%">{{ $payload['name'] }}</span>
+    <div class="btc-line" style="top:63.7%">
+        <span>This is to certify that Mr./Ms.</span>
+        <span class="btc-val">{{ $payload['name'] }}</span>
+    </div>
 
-    <span class="btc-t" style="left:12.8%;top:67.2%">Son / Daughter</span>
-    <span class="btc-t btc-b btc-d" style="left:27.0%;width:27.1%;top:67.2%">{{ $payload['father'] }}</span>
-    <span class="btc-t" style="left:54.5%;top:67.2%">of</span>
-    <span class="btc-t btc-b btc-d" style="left:56.5%;width:19.7%;top:67.2%">{{ $payload['district'] }}</span>
-    <span class="btc-t" style="left:76.8%;top:67.2%">District, has</span>
+    <div class="btc-line" style="top:67.2%">
+        <span>Son / Daughter</span>
+        <span class="btc-val">{{ $payload['father'] }}</span>
+        <span>of</span>
+        <span class="btc-val">{{ $payload['district'] }}</span>
+        <span>District, has</span>
+    </div>
 
-    <span class="btc-t" style="left:12.8%;top:70.6%">qualified in Color Belt Promotion Test Held on</span>
-    <span class="btc-t btc-b btc-d" style="left:53.2%;width:15.9%;top:70.6%">{{ $payload['exam_date'] }}</span>
-    <span class="btc-t" style="left:69.5%;top:70.6%">at</span>
-    <span class="btc-t btc-b btc-d" style="left:70.8%;width:15.0%;top:70.6%">{{ $payload['place1'] }}</span>
+    <div class="btc-line" style="top:70.6%">
+        <span>qualified in Color Belt Promotion Test Held on</span>
+        <span class="btc-val btc-slot">{{ $payload['exam_date'] }}</span>
+        <span>at</span>
+        <span class="btc-val">{{ $payload['place1'] }}</span>
+    </div>
 
-    <span class="btc-t btc-b btc-d btc-place2" style="left:14.2%;width:22.7%;top:74.1%">{{ $payload['place2'] }}</span>
-    <span class="btc-t" style="left:37.2%;top:74.1%">and is permitted to wear</span>
-    <span class="btc-t btc-b btc-d" style="left:59.3%;width:22.9%;top:74.1%">{{ $payload['belt'] }}</span>
-    <span class="btc-t" style="left:82.8%;top:74.1%">belt.</span>
+    <div class="btc-line" style="top:74.1%">
+        @if($payload['place2'] !== '')
+            <span class="btc-val">{{ $payload['place2'] }}</span>
+        @endif
+        <span>and is permitted to wear</span>
+        <span class="btc-val">{{ $payload['belt'] }}</span>
+        <span>belt.</span>
+    </div>
 
-    <span class="btc-t" style="left:12.8%;top:77.5%">He/She is not permitted to teach taekwondo</span>
-    <span class="btc-t" style="left:72.5%;top:77.5%">Grade:</span>
-    <span class="btc-t btc-b btc-d" style="left:77.9%;width:7.9%;top:77.5%">{{ $payload['grade'] }}</span>
+    <div class="btc-line" style="top:77.5%">
+        <span>He/She is not permitted to teach taekwondo</span>
+        <span class="btc-grow"></span>
+        <span class="btc-pair btc-grade">
+            <span>Grade:</span>
+            <span class="btc-val">{{ $payload['grade'] }}</span>
+        </span>
+    </div>
 </div>
