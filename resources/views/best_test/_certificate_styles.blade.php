@@ -16,15 +16,15 @@
     }
     .btc-line {
         position: absolute;
-        left: 12.8%;
-        width: 73%;
+        left: 11.2%;
+        width: 77.4%;
         display: flex;
         flex-wrap: nowrap;
         align-items: baseline;
         column-gap: 0.7cqi;
         transform: translateY(-88%);
         font-family: Arial, Helvetica, sans-serif;
-        font-size: 1.54cqi;
+        font-size: 1.58cqi;
         font-weight: 400;
         color: #333;
         line-height: 1;
@@ -38,15 +38,12 @@
         column-gap: 0.55cqi;
         flex: 0 0 auto;
     }
-    .btc-date {
-        flex: 0 0 34%;
-    }
-    .btc-grade {
-        flex: 0 0 24%;
-    }
+    .btc-date { flex: 0 0 36%; }
+    .btc-grade { flex: 0 0 26%; }
     .btc-slot {
-        flex: 0 1 15cqi;
+        flex: 0 1 14cqi;
         min-width: 12cqi;
+        max-width: 18cqi;
     }
     .btc-b {
         font-weight: 700;

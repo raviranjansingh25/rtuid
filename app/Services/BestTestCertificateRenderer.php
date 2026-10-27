@@ -132,10 +132,10 @@ class BestTestCertificateRenderer
                     $w = (int) $info[0];
                 }
             }
-            $size = max(11, (int) round($w * 0.0154));
+            $size = max(11, (int) round($w * 0.016));
             $gap = max(8, (int) round($w * 0.006));
-            $left = (int) round($w * 0.128);
-            $right = (int) round($w * 0.858);
+            $left = (int) round($w * 0.112);
+            $right = (int) round($w * 0.886);
             $x = $left
                 + self::textWidth('qualified in Color Belt Promotion Test Held on', $size, $regular)
                 + $gap
@@ -229,23 +229,23 @@ class BestTestCertificateRenderer
         $regular = self::resolveFontPath(false);
         $bold = self::resolveFontPath(true);
         $data = self::payload($batch, $row);
-        $size = max(11, (int) round($w * 0.0154));
+        $size = max(11, (int) round($w * 0.016));
         $minSize = max(9, (int) round($w * 0.011));
         $gap = max(8, (int) round($w * 0.006));
-        $left = (int) round($w * 0.128);
-        $right = (int) round($w * 0.858);
+        $left = (int) round($w * 0.112);
+        $right = (int) round($w * 0.886);
 
-        $y1 = (int) round($h * 0.603);
-        $y2 = (int) round($h * 0.637);
-        $y3 = (int) round($h * 0.672);
-        $y4 = (int) round($h * 0.706);
-        $y5 = (int) round($h * 0.741);
-        $y6 = (int) round($h * 0.775);
+        $y1 = (int) round($h * 0.600);
+        $y2 = (int) round($h * 0.634);
+        $y3 = (int) round($h * 0.668);
+        $y4 = (int) round($h * 0.702);
+        $y5 = (int) round($h * 0.736);
+        $y6 = (int) round($h * 0.770);
 
         $x = $left;
         $x = self::drawText($img, $x, $y1, 'No.', $size, $regular, $ink) + $gap;
         self::drawText($img, $x, $y1, $data['no'], $size, $bold, $ink);
-        $dateSlot = (int) round($w * 0.34);
+        $dateSlot = (int) round($w * 0.36);
         $x = $right - $dateSlot;
         $x = self::drawText($img, $x, $y1, 'Date:', $size, $regular, $ink) + $gap;
         self::fillDotted($img, $x, $right, $y1, $data['date'], $size, $minSize, $regular, $bold, $ink);
@@ -284,7 +284,7 @@ class BestTestCertificateRenderer
         $beltDot = self::textWidth('belt.', $size, $regular);
         $x = $left;
         if ($placeLines[1] !== '') {
-            $place2End = $x + (int) round(($right - $left - $wearW - $beltDot - $gap * 3) * 0.42);
+            $place2End = $x + (int) round(($right - $left - $wearW - $beltDot - $gap * 3) * 0.45);
             self::fillDotted($img, $x, $place2End, $y5, $placeLines[1], $size, $minSize, $regular, $bold, $ink);
             $x = $place2End + $gap;
         }
@@ -294,7 +294,7 @@ class BestTestCertificateRenderer
         self::drawText($img, $beltEnd + $gap, $y5, 'belt.', $size, $regular, $ink);
 
         self::drawText($img, $left, $y6, 'He/She is not permitted to teach taekwondo', $size, $regular, $ink);
-        $gradeSlot = (int) round($w * 0.24);
+        $gradeSlot = (int) round($w * 0.26);
         $x = $right - $gradeSlot;
         $x = self::drawText($img, $x, $y6, 'Grade:', $size, $regular, $ink) + $gap;
         self::fillDotted($img, $x, $right, $y6, $data['grade'], $size, $minSize, $regular, $bold, $ink);
@@ -328,7 +328,7 @@ class BestTestCertificateRenderer
     }
 
     /**
-     * Dotted field from $x to $end. Short or long text sits on the full span.
+     * Dotted field from $x to $end so the right side of each line is filled.
      */
     protected static function fillDotted($img, int $x, int $end, int $y, string $value, int $size, int $minSize, string $regular, string $bold, $color): void
     {
