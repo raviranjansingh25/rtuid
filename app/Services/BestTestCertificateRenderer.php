@@ -284,7 +284,10 @@ class BestTestCertificateRenderer
         $beltDot = self::textWidth('belt.', $size, $regular);
         $x = $left;
         if ($placeLines[1] !== '') {
-            $place2End = $x + (int) round(($right - $left - $wearW - $beltDot - $gap * 3) * 0.45);
+            $beltMin = self::textWidth($data['belt'], $size, $bold) + $gap;
+            $maxPlace2 = $right - $left - $wearW - $beltMin - $beltDot - ($gap * 4);
+            $need = self::textWidth($placeLines[1], $size, $bold) + $gap * 2;
+            $place2End = $x + min(max($need, $gap * 4), max(40, $maxPlace2));
             self::fillDotted($img, $x, $place2End, $y5, $placeLines[1], $size, $minSize, $regular, $bold, $ink);
             $x = $place2End + $gap;
         }

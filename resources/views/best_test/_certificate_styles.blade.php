@@ -67,6 +67,17 @@
     .btc-grade .btc-val {
         flex: 1 1 auto;
     }
+    .btc-place1 {
+        overflow: visible;
+        text-overflow: clip;
+    }
+    .btc-place {
+        flex: 0 0 auto;
+        overflow: visible;
+        text-overflow: clip;
+        min-width: 0;
+        max-width: none;
+    }
     .btc-actions { margin: 10px 0 18px; line-height: normal; }
     @media print {
         .no-print { display: none !important; }

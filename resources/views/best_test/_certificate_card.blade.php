@@ -33,12 +33,12 @@
         <span>qualified in Color Belt Promotion Test Held on</span>
         <span class="btc-val btc-slot">{{ $payload['exam_date'] }}</span>
         <span>at</span>
-        <span class="btc-val">{{ $payload['place1'] }}</span>
+        <span class="btc-val btc-place1">{{ $payload['place1'] }}</span>
     </div>
 
     <div class="btc-line" style="top:73.6%">
         @if($payload['place2'] !== '')
-            <span class="btc-val">{{ $payload['place2'] }}</span>
+            <span class="btc-val btc-place">{{ $payload['place2'] }}</span>
         @endif
         <span>and is permitted to wear</span>
         <span class="btc-val">{{ $payload['belt'] }}</span>
